@@ -45,16 +45,16 @@ void ordenar_puntos(punto *a, punto *b, punto *c){
 	}
 }
 
-unsigned char* color_textura(double u, double v)
+unsigned char* color_textura(float u, float v)
 {
 /* debe devolver un puntero al pixel adecuado, no al primero!! */
 	int fila = dimy * (1-v);
-	int columna = dimx * u;
-	int total = fila * 3 * dimx + columna * 3; 
+	int columna = dimx * 3 * u;
+	int total = fila * dimx * 3 + columna;
 	return(bufferra + total);
 }
 
-void dibujar_punto(double x, double y, double u, double v){
+void dibujar_punto(float x, float y, float u, float v){
 	unsigned char* colorv = color_textura(u,v);
 	unsigned char r,g,b;
 	r = colorv[0];
@@ -74,22 +74,28 @@ static void dibujar_triangulo(hiruki h){
 	b = h.p2;
 	c = h.p3;
 	ordenar_puntos(&a,&b,&c);
+	 
+	int xa = a.x, ya = a.y;
+	float ua = a.u, va = a.v;
+	int xb = b.x, yb = b.y; 
+	float ub = b.u, vb = b.v;
+	int xc = c.x, yc = c.y;
+	float uc = c.u, vc = c.v;
 	
-	int xa = a.x, ya = a.y, ua = a.u, va = a.v;
-	int xb = b.x, yb = b.y, ub = b.u, vb = b.v;
-	int xc = c.x, yc = c.y, uc = c.u, vc = c.v;
-	
-	double x,y,u,v;
-	for ( double alfa = 0; alfa <= 1; alfa += 0.001){
-		for ( double beta = 0; beta <= 1; beta += 0.001){
+	int x,y;
+	float u,v;
+	for ( float alfa = 0; alfa <= 1; alfa += 0.001){
+		for ( float beta = 0; beta <= 1; beta += 0.001){
 			
-			double gamma = 1 - beta - alfa;
+			float gamma = 1 - beta - alfa;
 			if(gamma >= 0){
 				x = alfa * xa + beta * xb + gamma * xc;
 				y = alfa * ya + beta * yb + gamma * yc;
 				u = alfa * ua + beta * ub + gamma * uc;
 				v = alfa * va + beta * vb + gamma * vc;
+				
 				dibujar_punto(x,y,u,v);
+				
 			}
 			 
 		}

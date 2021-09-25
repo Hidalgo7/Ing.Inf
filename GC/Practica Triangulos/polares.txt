@@ -1,9 +1,0 @@
-static void trianguloytal(hiruki h){
-	punto aa=,bb,cc;
-	for alfa mientras alfa<=1, alfa=alfa+0.00001
-		for beta (igual que alfa)
-			gamma=1-beta-alfa
-			x=polares(alfa*xa+beta*xb+gamma*xc)
-			y=polares
-			dibujarxy
-}
