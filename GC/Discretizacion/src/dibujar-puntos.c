@@ -47,10 +47,10 @@ void ordenar_puntos(punto *a, punto *b, punto *c){
 
 unsigned char* color_textura(float u, float v)
 {
-/* debe devolver un puntero al pixel adecuado, no al primero!! */
+
 	int fila = dimy * (1-v);
-	int columna = dimx * 3 * u;
-	int total = fila * dimx * 3 + columna;
+	int columna = dimx * u;
+	int total = (fila * dimx  + columna) * 3;
 	return(bufferra + total);
 }
 
