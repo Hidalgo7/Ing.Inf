@@ -186,5 +186,17 @@ printf("2 pasada\n");
             object_ptr->max.z = object_ptr->vertex_table[i].coord.z;
 
     }
+    
+    /* Object matrix initialize */
+    matrix m;
+    for(int i = 0; i < 16; i++){
+        m.values[i] = 0;
+    }
+    m.values[0];
+    m.values[5];
+    m.values[9];
+    m.values[15];
+    
+    object_ptr->matrixptr = &m;
     return (0);
 }

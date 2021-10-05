@@ -101,6 +101,12 @@ typedef struct {
     GLint *vertex_table;                /* table with the index of each vertex */
 } face;
 
+typedef struct matrix {
+    GLfloat values[16];
+    matrix *sigptr;
+} matrix;
+    
+
 
 /****************************
  * Structure to store a     *
@@ -113,6 +119,7 @@ struct object3d{
     face *face_table;                   /* table of faces */
     point3 min;                         /* coordinates' lower bounds */
     point3 max;                         /* coordinates' bigger bounds */
+    matrix *matrixptr;
     struct object3d *next;              /* next element in the pile of objects */
 };
 
