@@ -1,4 +1,5 @@
 #include "definitions.h"
+#include <stdio.h>
 #include <GL/glut.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -101,7 +102,7 @@ void display(void) {
         }
 
         /* Draw the object; for each face create a new polygon with the corresponding vertices */
-        glLoadIdentity();
+        glLoadMatrixf(aux_obj->matrixptr->values);
         for (f = 0; f < aux_obj->num_faces; f++) {
             glBegin(GL_POLYGON);
             for (v = 0; v < aux_obj->face_table[f].num_vertices; v++) {

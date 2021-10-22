@@ -101,10 +101,12 @@ typedef struct {
     GLint *vertex_table;                /* table with the index of each vertex */
 } face;
 
-typedef struct matrix {
+typedef struct matrix matrix;
+
+struct matrix {
     GLfloat values[16];
     matrix *sigptr;
-} matrix;
+};
     
 
 

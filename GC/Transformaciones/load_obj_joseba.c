@@ -188,15 +188,16 @@ printf("2 pasada\n");
     }
     
     /* Object matrix initialize */
-    matrix m;
+    matrix *m = malloc(sizeof (matrix));
     for(int i = 0; i < 16; i++){
-        m.values[i] = 0;
+        m->values[i] = 0;
     }
-    m.values[0];
-    m.values[5];
-    m.values[9];
-    m.values[15];
+    m->values[0] = 1;
+    m->values[5] = 1;
+    m->values[10] = 1;
+    m->values[15] = 1;
     
-    object_ptr->matrixptr = &m;
+    object_ptr->matrixptr = m;
+    printf("Matriz cargada\n");
     return (0);
 }
