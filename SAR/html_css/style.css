@@ -1,0 +1,70 @@
+h1 a{
+    font-family: 'Secular One', sans-serif;
+    font-size: xx-large;
+    color: white;
+}
+h2{
+    font-family: 'Lato', sans-serif;
+    background-color: #000000;
+    padding: 10px;
+    margin: 0;
+    color: white;
+    border-bottom: 3px solid white;
+}
+header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #000000;
+    border-bottom: 3px solid white;
+}
+header img{
+    height: 100px;
+    width: 100px;
+    padding-right: 40px;
+}
+.logo{
+    display: flex;
+    align-items: center;
+}
+.logo a{
+    text-decoration: none;
+}
+.logo:hover a{
+    color: #950101
+}
+nav ul{
+    display: flex;
+    justify-content: space-between;
+}
+nav li{
+    padding: 0px 40px;
+    list-style-type: none;
+}
+
+nav a{
+    text-decoration: none;
+    color:white;
+    font-family: 'Secular One', sans-serif;
+}
+nav a:hover{
+    color: #950101;
+}
+
+section{
+    font-family: 'Lato', sans-serif;
+    background-color: #950101;
+    color: white;
+    margin: 0;
+    padding: 10px;
+}
+
+.partners{
+    display: flex;
+    width: 100%;
+}
+.partners img{
+    width: 25%;
+    margin: 1%;
+    object-fit: cover;
+}

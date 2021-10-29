@@ -12,7 +12,7 @@ extern GLdouble _ortho_y_min,_ortho_y_max;
 extern GLdouble _ortho_z_min,_ortho_z_max;
 
 int rotar = 0;
-int trasladar = 0;
+int trasladar = 1;
 int escalar = 0;
 char referencia[10] = "Local";
 
@@ -66,11 +66,11 @@ void keyboard(unsigned char key, int x, int y) {
     case 'f':
     case 'F':
         /*Ask for file*/
-        //printf("%s", KG_MSSG_SELECT_FILE);
-        //scanf("%s", fname);
+        printf("%s", KG_MSSG_SELECT_FILE);
+        scanf("%s", fname);
         /*Allocate memory for the structure and read the file*/
         auxiliar_object = (object3d *) malloc(sizeof (object3d));
-        read = read_wavefront("objektuak2/altair.obj", auxiliar_object);
+        read = read_wavefront(fname, auxiliar_object);
         switch (read) {
         /*Errors in the reading*/
         case 1:
@@ -93,50 +93,55 @@ void keyboard(unsigned char key, int x, int y) {
         }
         break;
 
-    case 9: /* <TAB> */
-    	if(_selected_object != NULL){
+	case 9: /* <TAB> */
+	     if(_selected_object != NULL){
 		_selected_object = _selected_object->next;
 		/*The selection is circular, thus if we move out of the list we go back to the first element*/
 		if (_selected_object == 0) _selected_object = _first_object;
-	}
-	else{
+	     }
+	     else{
 		printf("No hay ningun objeto cargado\n");
-	}
-        break;
+             }
+	     break;
 
-    case 127: /* <SUPR> */
-        /* Erasing an object depends on whether it is the first one or not */
-        if (_selected_object == _first_object)
-        {
-            /*To remove the first object we just set the first as the current's next*/
-            _first_object = _first_object->next;
-           
-            for(int i=0; i < _selected_object->num_faces; i++){
-            	face poligono= _selected_object->face_table[i]; 
-		free(poligono.vertex_table);
-		(_selected_object->face_table[i]);
-		 
-            }
-            /*Once updated the pointer to the first object it is save to free the memory*/
-            free(_selected_object);
-            /*Finally, set the selected to the new first one*/
-            _selected_object = _first_object;
-        } else {
-            /*In this case we need to get the previous element to the one we want to erase*/
-            auxiliar_object = _first_object;
-            while (auxiliar_object->next != _selected_object)
-            /*Now we bypass the element to erase*/
-            auxiliar_object->next = _selected_object->next;
-            /*free the memory*/
-             for(int i=0; i < _selected_object->num_faces; i++){
-            	face poligono= _selected_object->face_table[i]; 
-		free(poligono.vertex_table);
-		(_selected_object->face_table[i]);
-            }
-            /*and update the selection*/
-            _selected_object = auxiliar_object;
-        }
-        break;
+	case 127: /* <SUPR> */
+	if(_selected_object != NULL){
+		/*Erasing an object depends on whether it is the first one or not*/
+		if (_selected_object == _first_object)
+		{
+		    /*To remove the first object we just set the first as the current's next*/
+		    _first_object = _first_object->next;
+		   
+		    for(int i=0; i < _selected_object->num_faces; i++){
+		    	face poligono = _selected_object->face_table[i]; 
+			free(poligono.vertex_table);
+			(_selected_object->face_table[i]);
+			 
+		    }
+		    /*Once updated the pointer to the first object it is save to free the memory*/
+		    free(_selected_object);
+		    /*Finally, set the selected to the new first one*/
+		    _selected_object = _first_object;
+		} else {
+		    /*In this case we need to get the previous element to the one we want to erase*/
+		    auxiliar_object = _first_object;
+		    while (auxiliar_object->next != _selected_object){
+		    	auxiliar_object = auxiliar_object->next;
+		    }
+		    /*Now we bypass the element to erase*/
+		    auxiliar_object->next = _selected_object->next;
+		    /*free the memory*/
+		     for(int i=0; i < _selected_object->num_faces; i++){
+		    	face poligono= _selected_object->face_table[i]; 
+			free(poligono.vertex_table);
+			(_selected_object->face_table[i]);
+				 
+		    }
+		    /*and update the selection*/
+		    _selected_object = auxiliar_object;
+		}
+	}
+	break;
 
     case '-':
         if (glutGetModifiers() == GLUT_ACTIVE_CTRL){
@@ -252,8 +257,10 @@ void keyboard(unsigned char key, int x, int y) {
     	}
     	break;
     case 26:
-    	if(_selected_object->matrixptr->sigptr != NULL){
-    		_selected_object->matrixptr = _selected_object->matrixptr->sigptr;
+	if(_selected_object != NULL){
+	    	if(_selected_object->matrixptr != NULL){
+	    		_selected_object->matrixptr = _selected_object->matrixptr->sigptr;
+	    	}
     	}
     	break;
     case 27: /* <ESC> */
