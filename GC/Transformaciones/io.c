@@ -258,7 +258,7 @@ void keyboard(unsigned char key, int x, int y) {
     	break;
     case 26:
 	if(_selected_object != NULL){
-	    	if(_selected_object->matrixptr != NULL){
+	    	if(_selected_object->matrixptr->sigptr != NULL){
 	    		_selected_object->matrixptr = _selected_object->matrixptr->sigptr;
 	    	}
     	}

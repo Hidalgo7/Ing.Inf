@@ -1,0 +1,11 @@
+body{
+    margin:0% 10%
+}
+form{
+    display: flex;
+    flex-wrap: wrap;
+}
+.item{
+    width: 44%;
+    margin: 2%;
+}

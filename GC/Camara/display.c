@@ -13,6 +13,9 @@ extern GLdouble _ortho_z_min,_ortho_z_max;
 
 extern object3d *_first_object;
 extern object3d *_selected_object;
+extern camera * _first_camera;
+extern camera *_selected_camera;
+extern GLdouble zoom;
 
 /**
  * @brief Function to draw the axes
@@ -67,7 +70,8 @@ void display(void) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    glOrtho(_ortho_x_min, _ortho_x_max, _ortho_y_min, _ortho_y_max, 0, _ortho_z_max);
+    //glOrtho(_ortho_x_min, _ortho_x_max, _ortho_y_min, _ortho_y_max, 0, _ortho_z_max);
+    glFrustum(-0.1*zoom,0.1*zoom,-0.1*zoom,0.1*zoom,0.1,10000);
 
     /* Now we start drawing the object */
     glMatrixMode(GL_MODELVIEW);
@@ -76,33 +80,7 @@ void display(void) {
     /*First, we draw the axes*/
     draw_axes();
     
-    /*We define the default camera*/
-    camera* _default_camera = malloc( sizeof(camera) );
-    matrix* m = malloc( sizeof(camera) );
-    int e = -1;
-    for (int i = 0; i < 16; i++){
-    	switch (i){
-    	
-    	case 0: // X coord
-    		m->values[i] = 1;
-    	case 4: // Y coord
-    		m->values[i] = 1;
-    	case 8: // Z coord 
-    		m->values[i] = 10;
-    	case 3:
-    		m->values[i] = -m->values[0]*e;
-    	case 7:
-    		m->values[i] = -m->values[4]*e;
-    	case 11:
-    		m->values[i] = -m->values[8]*e;
-    	case 15:
-    		m->values[i] = 1;
-    	default:
-    		m->values[i] = 0;
-    	}
-    }
     
-    _default_camera->matrixptr = m;
 
     /*Now each of the objects in the list*/
     while (aux_obj != 0) {
@@ -115,7 +93,7 @@ void display(void) {
         }
 
         /* Draw the object; for each face create a new polygon with the corresponding vertices */
-        glLoadMatrixf(_default_camera->matrixptr->values);
+        glLoadMatrixf(_selected_camera->matrixcsrptr->values);
         glMultMatrixf(aux_obj->matrixptr->values);
         for (f = 0; f < aux_obj->num_faces; f++) {
             glBegin(GL_POLYGON);

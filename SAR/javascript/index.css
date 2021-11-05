@@ -1,0 +1,56 @@
+h1 {
+    text-align: center;
+    font-size: 60px;
+}
+
+#ul1 {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: darkseagreen;
+    size: landscape;
+}
+
+.navbar {
+    height: 20px;
+}
+
+li {
+    display: inline-flex;
+    float: right;
+    text-align: center;
+    font-size: 30px;
+}
+
+a{
+    color: white;
+}
+
+li {
+
+    display: block;
+    text-align: center;
+    padding: 25px 16px;
+    text-decoration: none;
+}
+
+/* Change the link color to #111 (black) on hover */
+li a:hover{
+    background-color: green;
+}
+div {
+    position: absolute;
+    right: 0;
+    bottom: 10px;
+}
+
+#logoHtml {
+    width: 100px;
+    height: 100px;
+}
+
+#logoCSS {
+    width: 100px;
+    height: 100px;
+}

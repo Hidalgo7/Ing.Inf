@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Añadir comentario</title>
+    <link rel="stylesheet" href="formulario.css">
+    <script src="script.js"></script>
+</head>
+<body>
+    <h1>Añadir comentario</h1>
+    <p>Los campos con * son obligatorios.</p>
+    <form action="">
+        <div class="item">
+            <label for="nombre">*Nombre:</label>
+            <input type="text" id="nombre">
+        </div>
+         
+        <div class="item">
+            <label for="correo">Correo:</label>
+            <input type="email" name="correo" id="correo">
+        </div>
+
+        <div class="item">
+            <label for="publica">Deseo que mi direccion de correo sea publica.</label>
+            <input type="checkbox" name="visible" id="visible">
+        </div>
+
+        <div class="item">
+            <textarea name="comentario" id="comentario" cols="50" rows="10" placeholder="Escribe aqui tu comentario..." id="comentario"></textarea>
+        </div>
+
+        <div class="item">
+            <input type="button" value="Enviar comentario" onclick="verify()">
+        </div>
+
+        
+        
+    </form>
+</body>
+</html>

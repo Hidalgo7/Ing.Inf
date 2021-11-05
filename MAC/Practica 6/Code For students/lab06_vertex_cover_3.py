@@ -29,7 +29,7 @@ def recursive_vertex_cover(graph, cover):
     if not partial_validity_check(cover,graph):
         return [1]*len(graph)
     elif not None in cover:
-        return cover;
+        return cover
     else:
         u = 0
         v = 0

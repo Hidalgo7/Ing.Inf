@@ -1,0 +1,27 @@
+body{
+    margin: 0% 5%;
+}
+.comentario{
+    width: 60%;
+    margin-bottom: 5%;
+    border: 1px solid black;
+}
+
+.header-comentario{
+    background-color: green;
+    display: flex;
+    align-items: center;
+}
+
+.header-comentario > *{
+    margin: 10px;
+}
+
+.header-comentario h2{
+    color: blue;
+}
+
+.texto-comentario{
+    text-indent: 50px;
+    margin: 20px;
+}

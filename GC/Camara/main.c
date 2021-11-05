@@ -6,6 +6,7 @@
 #include "io.h"
 #include "definitions.h"
 
+
 /** GLOBAL VARIABLES **/
 
 GLdouble _window_ratio;                     /*Control of window's proportions */
@@ -15,6 +16,10 @@ GLdouble _ortho_z_min,_ortho_z_max;         /*Variables for the control of the o
 
 object3d * _first_object= 0;                /*List of objects*/
 object3d * _selected_object = 0;            /*Object currently selected*/
+    
+camera * _first_camera = 0;		     /*We define the default camera*/
+camera * _selected_camera = 0;
+GLdouble zoom = 1;
 
 /** GENERAL INITIALIZATION **/
 void initialization (){
@@ -31,6 +36,24 @@ void initialization (){
 
     /*Definition of the background color*/
     glClearColor(KG_COL_BACK_R, KG_COL_BACK_G, KG_COL_BACK_B, KG_COL_BACK_A);
+    
+    _first_camera = malloc( sizeof(camera) );
+    GLfloat matriz_referencia[16];
+    vector3* e;
+    e->x = 10;
+    e->y = 10;
+    e->z = 10;
+    matrix* m1 = malloc( sizeof(matrix) );
+    matrix* m2 = malloc( sizeof(matrix) );
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(e->x,e->y,e->z,0,0,0,0,1,0);
+    glGetFloatv(GL_MODELVIEW_MATRIX,m1->values);
+    get_matriz_objeto(m1->values,e,m2->values);
+    
+    _first_camera->matrixcsrptr = m1;
+    _first_camera->matrixobjptr = m2;
+    _selected_camera = _first_camera;
 
     /*Definition of the method to draw the objects*/
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

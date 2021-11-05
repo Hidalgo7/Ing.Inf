@@ -56,6 +56,12 @@
 
 #define KG_MAX_DOUBLE                       10E25
 
+#define GLOBAL                              1
+#define LOCAL                               0
+
+#define OBJETO                              0
+#define CAMARA                              1
+
 /** STRUCTURES **/
 
 /****************************
@@ -117,7 +123,9 @@ struct camera {
     face *face_table;                   
     point3 min;                         
     point3 max; 
-    matrix *matrixptr;
+    matrix *matrixobjptr;
+    matrix *matrixcsrptr;
+    struct camera *next;
 };  
 
 
