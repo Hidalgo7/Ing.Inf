@@ -187,6 +187,34 @@ printf("2 pasada\n");
 
     }
     
+    /*Calculate normal vector of every polygon */
+    for (int i = 0; i < object_ptr->num_faces; i++){
+    	face act = object_ptr->face_table[i];
+    	
+    	vertex p1 = object_ptr->vertex_table[act->vertex_table[0]];
+    	vertex p2 = object_ptr->vertex_table[act->vertex_table[1]];
+    	vertex p3 = object_ptr->vertex_table[act->vertex_table[2]];
+    	
+    	vector3 *v1,*v2;
+    	v1->x = p1->coord.x - p2->coord.x;
+    	v1->y = p1->y - p2->y;
+    	v2->z = p1->z - p2->z;
+    	
+    	v2->x = p1->x - p3->x;
+    	v2->y = p1->y - p3->y;
+    	v2->z = p1->z - p3->z;
+    	
+    	vector3 *n = malloc( sizeof (vector3) );
+    	n->x = v1->y * v2->z - v2->y * v1->z;
+    	n->y = v1->x * v2->z - v2->x * v1->z;
+    	n->z = v1->x * v2->y - v2->x * v1->y;
+    	
+    	act->normal = n;
+    	printf("Vector 1: (%.2f,%.2f,%.2f)",v1->x,v1->y,v1->z);
+    	printf("Vector 2: (%.2f,%.2f,%.2f)",v2->x,v2->y,v2->z);
+    	printf("Vector Normal: (%.2f,%.2f,%.2f)",n->x,n->y,n->z);
+    }
+    
     /* Object matrix initialize */
     matrix *m = malloc(sizeof (matrix));
     for(int i = 0; i < 16; i++){

@@ -26,11 +26,18 @@ def main():
     print("\n\n")
     # Hacemos un split en train y test con un porcentaje del 0.75 Train
     train,test = splitTrainTest(mtcars_normalizado,0.75)
+    print(type(test))
     # Separamos las labels del Test. Es como si no nos las dieran!!
-    labels = test.pop('mpg').tolist()
-    print(labels)
+    true_labels = test.pop('mpg').tolist()
     # Predecimos el conjunto de test
-
+    predicted_labels = []
+    K = 6
+    for index in test.index:
+        predicted_labels.append(knn(test.loc[index],train,K))
+    
+    test['mpg'] = true_labels
+    test['pred_mpg'] = predicted_labels
+    print(test)
     # Mostramos por pantalla el Accuracy por ejemplo
     print("Accuracy conseguido:")
     print(accuracy(true_labels, predicted_labels))
@@ -54,11 +61,11 @@ def splitTrainTest(data, percentajeTrain):
     v  = np.random.rand(len(data))
     mascara = v > 0.75
     
-    train = data.loc[mascara]
-    test = data.loc[~mascara]
-    print("TRAIN: \n")
+    test = data.loc[mascara]
+    train = data.loc[~mascara]
+    print("TRAIN:")
     print(train)
-    print("TEST: \n")
+    print("TEST:")
     print(test)
     return(train,test)
 
@@ -77,20 +84,54 @@ def knn(newx, data, K):
     Receives two pandas dataframes. Newx consists on a single row df.
     Returns the prediction for newx
     """
-
+    
+    newx_list = newx.values.tolist()
+    data_list = data.values.tolist()
+    
+    distances = []
+    
+    for case in data_list:
+        distances.append(euclideanDistance2points(case,newx_list))
+    
+    distance_order = sorted(range(len(distances)), key=lambda k: distances[k])
+    neighbors = []
+    for i in range(0,K):
+        neighbors.append(distance_order.index(i))
+    
+    labels = {}
+    for x in neighbors:
+        if str(data.loc[data.index[x]]['mpg']) in labels:
+            labels[str(data.loc[data.index[x]]['mpg'])] += 1
+        else:
+            labels[str(data.loc[data.index[x]]['mpg'])] = 1
+    print(labels)
+    newlabel = float(max(labels,key=labels.get))
+    print(newlabel)
+    
     return(newlabel)
 
 def euclideanDistance2points(x,y):
     """
     Takes 2 matrix - Not pandas dataframe!
     """
+    sum = 0
+    for (i,j) in zip(x,y):
+        sum += (i-j)**2
     
-
-    return()
+    dist = math.sqrt(sum)
+            
+    return(dist)
 
 # FUNCION accuracy
 def accuracy(true, pred):
-    return()
+    cont = 0
+    for (t,p) in zip(true,pred):
+        if t == p:
+            cont += 1
+    print(cont)
+    print(len(true))
+    acc = cont/len(true)
+    return(acc)
 
 if __name__ == '__main__':
     np.random.seed(25)

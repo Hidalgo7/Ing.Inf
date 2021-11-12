@@ -117,7 +117,7 @@ void keyboard(unsigned char key, int x, int y) {
 	case 'n':
 	case 'N':
 	{
-		auxiliar_camera = (camera *) malloc( sizeof(camera) );
+		auxiliar_camera = malloc( sizeof(camera) );
 		GLfloat matriz_referencia[16];
 		vector3* e;
 		e->x = 10;

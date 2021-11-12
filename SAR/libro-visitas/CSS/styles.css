@@ -1,0 +1,131 @@
+h1 {
+    text-align: center;
+    font-size: 60px;
+}
+
+#ul1 {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: darkseagreen;
+    size: landscape;
+}
+
+.navbar {
+    height: 20px;
+}
+
+li {
+    float: right;
+    text-align: center;
+    font-size: 30px;
+    display: block;
+    padding: 25px 16px;
+    text-decoration: none;
+}
+
+a{
+    color: white;
+}
+
+li:hover{
+    background-color: green;
+}
+#logos {
+    position: absolute;
+    right: 0;
+    bottom: 10px;
+}
+#logoHtml {
+    width: 100px;
+    height: 100px;
+}
+
+#logoCSS {
+    width: 100px;
+    height: 100px;
+}
+
+
+.comentario{
+    alignment: center;
+    width: 50%;
+    margin-bottom: 5%;
+    padding: 5px;
+    border: 1px solid darkseagreen;
+
+}
+
+form{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    font-family: Helvetica;
+}
+
+form > *{
+
+    width: 49%;
+    margin: 4%;
+
+}
+
+label{
+    font-size: 25px;
+}
+
+input{
+    font-size: 25px;
+    border-top-style: hidden;
+    border-left-style: hidden;
+    border-right-style: hidden;
+    border-bottom-style: groove;
+}
+
+input:focus{
+    outline: none;
+}
+
+textarea{
+    font-size: 25px;
+    border-top-style: hidden;
+    border-left-style: hidden;
+    border-right-style: hidden;
+    border-bottom-style: groove;
+}
+
+textarea:focus{
+    outline:none;
+}
+
+.header-comentario{
+    background-color: darkseagreen;
+    display: flex;
+    align-items: center;
+}
+
+.header-comentario > *{
+    margin: 10px;
+}
+
+.añadirComentario{
+    margin: auto;
+    width: 50%;
+    margin-bottom: 5%;
+    padding: 5px;
+    border: 1px solid darkseagreen;
+}
+
+.header-comentario h2{
+    color: white;
+}
+
+.texto-comentario{
+    text-indent: 50px;
+    margin: 20px;
+}
+
+form{
+    border: darkseagreen 5px solid;
+}

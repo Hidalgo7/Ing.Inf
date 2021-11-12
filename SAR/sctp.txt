@@ -1,0 +1,1 @@
+sudo sftp -oKexAlgorithms=+diffie-hellman-group1-sha1 -P 2222 localhost

@@ -105,6 +105,7 @@ typedef struct {
 typedef struct {
     GLint num_vertices;                 /* number of vertices in the face */
     GLint *vertex_table;                /* table with the index of each vertex */
+    vector3 *normal;			 /* normal vector of the poligon */
 } face;
 
 typedef struct matrix matrix;
@@ -118,7 +119,7 @@ typedef struct camera camera;
 
 struct camera {
     GLint num_vertices;                 
-    vertex *vertex_table;               
+    vertex *vertex_table;              
     GLint num_faces;                    
     face *face_table;                   
     point3 min;                         
