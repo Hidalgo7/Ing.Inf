@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="public/favicon.ico" type="image/x-icon">
+    <title>Añadir comentarios</title>
+    <link rel="stylesheet" href="CSS/styles.css">
+    <script src="javascript/script.js"></script>
+</head>
+<body>
+    <header>
+        <h1> LIBRO DE VISITAS </h1>
+        <nav>
+            <ul id="ul1">
+                <li id="li1"> <a href=addComentarios.html> Añadir comentario </a></li>
+                <li id="li2"> <a href=listComentarios.php>Consultar comentarios </a></li>
+                <li id="li0"> <a href=index.html> Menu principal </a></li>
+            </ul>
+        </nav>
+    </header>
+    <br>
+    <div class="añadirComentario">
+    <form action="guardarVisita.php" onsubmit="return verify()" method="post">
+        <br>
+        <input type="text" name="nombre"  id="nombre"  placeholder="Username*">
+        <input type="text" name="email" id="email" size="31" placeholder="Email" multiple>
+        <div>
+            <label for="visible" >
+            Marque la casilla si no desea hacer visible su direccion de correo electronico:
+            </label>
+            <input type="checkbox" id="visible" name="visible">
+        </div>
+        <textarea id="comentario" name="comentario" rows="4" cols="50"  placeholder="Add comment*"></textarea>
+        <input type="submit" value="Enviar">
+
+    </form>
+    </div>
+</body>
+</html>

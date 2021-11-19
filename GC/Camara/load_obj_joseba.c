@@ -3,6 +3,7 @@
 #include <string.h>
 #include <malloc.h>
 #include "definitions.h"
+#include "math.h"
 
 #define MAXLINE 200
 
@@ -187,33 +188,49 @@ printf("2 pasada\n");
 
     }
     
-    /*Calculate normal vector of every polygon */
+    /*Calculate normal vector of every polygon*/
     for (int i = 0; i < object_ptr->num_faces; i++){
     	face act = object_ptr->face_table[i];
     	
-    	vertex p1 = object_ptr->vertex_table[act->vertex_table[0]];
-    	vertex p2 = object_ptr->vertex_table[act->vertex_table[1]];
-    	vertex p3 = object_ptr->vertex_table[act->vertex_table[2]];
+    	vertex p1 = object_ptr->vertex_table[act.vertex_table[0]];
+    	vertex p2 = object_ptr->vertex_table[act.vertex_table[1]];
+    	vertex p3 = object_ptr->vertex_table[act.vertex_table[2]];
     	
-    	vector3 *v1,*v2;
-    	v1->x = p1->coord.x - p2->coord.x;
-    	v1->y = p1->y - p2->y;
-    	v2->z = p1->z - p2->z;
+    	vector3 v1;
+    	vector3 v2;
+    	printf("Punto 1: (%.2f,%.2f,%.2f)\n",p1.coord.x,p1.coord.y,p1.coord.z);
+    	printf("Punto 2: (%.2f,%.2f,%.2f)\n",p2.coord.x,p2.coord.y,p2.coord.z);
+    	printf("Punto 3: (%.2f,%.2f,%.2f)\n",p3.coord.x,p3.coord.y,p3.coord.z);
     	
-    	v2->x = p1->x - p3->x;
-    	v2->y = p1->y - p3->y;
-    	v2->z = p1->z - p3->z;
+    	v1.x = p2.coord.x - p1.coord.x;
+    	v1.y = p2.coord.y - p1.coord.y;
+    	v1.z = p2.coord.z - p1.coord.z;
+    	
+    	v2.x = p3.coord.x - p1.coord.x;
+    	v2.y = p3.coord.y - p1.coord.y;
+    	v2.z = p3.coord.z - p1.coord.z;
     	
     	vector3 *n = malloc( sizeof (vector3) );
-    	n->x = v1->y * v2->z - v2->y * v1->z;
-    	n->y = v1->x * v2->z - v2->x * v1->z;
-    	n->z = v1->x * v2->y - v2->x * v1->y;
+    	n->x = v1.y * v2.z - v2.y * v1.z;
+    	n->y = -(v1.x * v2.z - v2.x * v1.z);
+    	n->z = v1.x * v2.y - v2.x * v1.y;
     	
-    	act->normal = n;
-    	printf("Vector 1: (%.2f,%.2f,%.2f)",v1->x,v1->y,v1->z);
-    	printf("Vector 2: (%.2f,%.2f,%.2f)",v2->x,v2->y,v2->z);
-    	printf("Vector Normal: (%.2f,%.2f,%.2f)",n->x,n->y,n->z);
+    	
+    	GLfloat length = sqrt(pow(n->x,2) + pow(n->y,2) + pow(n->z,2));
+    	if(length != 0){
+    		n->x = n->x / length;
+    		n->y = n->y / length;
+    		n->z = n->z / length;
+    	}
+    	length = sqrt(pow(n->x,2) + pow(n->y,2) + pow(n->z,2));
+    	
+    	act.normal = n;
+    	printf("Vector 1: (%.2f,%.2f,%.2f)\n",v1.x,v1.y,v1.z);
+    	printf("Vector 2: (%.2f,%.2f,%.2f)\n",v2.x,v2.y,v2.z);
+    	printf("Vector Normal: (%.4f,%.4f,%.4f)\n",n->x,n->y,n->z);
+    	printf("Longitud del vector:%.2f\n",length);
     }
+    
     
     /* Object matrix initialize */
     matrix *m = malloc(sizeof (matrix));

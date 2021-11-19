@@ -26,7 +26,7 @@ def main():
     print("\n\n")
     # Hacemos un split en train y test con un porcentaje del 0.75 Train
     train,test = splitTrainTest(mtcars_normalizado,0.75)
-    print(type(test))
+    kFoldCV(mtcars_normalizado,4)
     # Separamos las labels del Test. Es como si no nos las dieran!!
     true_labels = test.pop('mpg').tolist()
     # Predecimos el conjunto de test
@@ -75,8 +75,9 @@ def kFoldCV(data, K):
     YOU CAN USE THE sklearn KFold function here
     How to: https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.KFold.html
     """
-
-    return()
+    kf = KFold(n_splits = K, shuffle = True, random_state = 2)
+    result = list(kf.split(data))
+    print(result)
 
 # FUNCION modelo prediccion
 def knn(newx, data, K):
@@ -104,7 +105,6 @@ def knn(newx, data, K):
             labels[str(data.loc[data.index[x]]['mpg'])] += 1
         else:
             labels[str(data.loc[data.index[x]]['mpg'])] = 1
-    print(labels)
     newlabel = float(max(labels,key=labels.get))
     print(newlabel)
     

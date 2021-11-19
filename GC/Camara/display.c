@@ -15,8 +15,23 @@ extern object3d *_first_object;
 extern object3d *_selected_object;
 extern camera * _first_camera;
 extern camera *_selected_camera;
-extern GLdouble zoom;
+extern int modo;
+extern int proyection;
 
+void get_matriz_csr(GLfloat* m1,GLfloat* m2){
+    for(int i = 0; i < 3; i++){
+    	for (int j = 0; j < 3;j++){
+    			m2[i+4*j] = m1[4*i+j];
+    	}
+    }
+    m2[12] = m1[12]*m1[0]+m1[13]*m1[1]+m1[14]*m1[2];
+    m2[13] = m1[12]*m1[4]+m1[13]*m1[5]+m1[14]*m1[6];
+    m2[14] = m1[12]*m1[8]+m1[13]*m1[9]+m1[14]*m1[10];
+    m2[3] = 0;
+    m2[7] = 0;
+    m2[11] = 0;
+    m2[15] = 1;
+}
 /**
  * @brief Function to draw the axes
  */
@@ -62,6 +77,7 @@ void reshape(int width, int height) {
 void display(void) {
     GLint v_index, v, f;
     object3d *aux_obj = _first_object;
+    camera *aux_cam = _first_camera;
 
     /* Clear the screen */
     glClear(GL_COLOR_BUFFER_BIT);
@@ -70,8 +86,18 @@ void display(void) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    //glOrtho(_ortho_x_min, _ortho_x_max, _ortho_y_min, _ortho_y_max, 0, _ortho_z_max);
-    glFrustum(-0.1*zoom,0.1*zoom,-0.1*zoom,0.1*zoom,0.1,10000);
+    
+    if(proyection){
+    	glFrustum(_selected_camera->proyection[0],_selected_camera->proyection[1],
+    	_selected_camera->proyection[2],_selected_camera->proyection[3],
+    	_selected_camera->proyection[4],_selected_camera->proyection[5]);	
+    }
+    else{
+    	glOrtho(_selected_camera->proyection[0],_selected_camera->proyection[1],
+    	_selected_camera->proyection[2],_selected_camera->proyection[3],
+    	_selected_camera->proyection[4],_selected_camera->proyection[5]);
+    }
+    
 
     /* Now we start drawing the object */
     glMatrixMode(GL_MODELVIEW);
@@ -93,20 +119,83 @@ void display(void) {
         }
 
         /* Draw the object; for each face create a new polygon with the corresponding vertices */
-        glLoadMatrixf(_selected_camera->matrixcsrptr->values);
-        glMultMatrixf(aux_obj->matrixptr->values);
-        for (f = 0; f < aux_obj->num_faces; f++) {
-            glBegin(GL_POLYGON);
-            for (v = 0; v < aux_obj->face_table[f].num_vertices; v++) {
-                v_index = aux_obj->face_table[f].vertex_table[v];
-                glVertex3d(aux_obj->vertex_table[v_index].coord.x,
-                        aux_obj->vertex_table[v_index].coord.y,
-                        aux_obj->vertex_table[v_index].coord.z);
+        if(modo == CAMARAOBJETO){
+           matrix *aux_matrix = malloc( sizeof(matrix) );
+           get_matriz_csr(_selected_object->matrixptr->values,aux_matrix->values);
+           glLoadMatrixf(aux_matrix->values);
+           if (aux_obj != _selected_object){
+           	glMultMatrixf(aux_obj->matrixptr->values);
+           	for (f = 0; f < aux_obj->num_faces; f++) {
+		    glBegin(GL_POLYGON);
+		    for (v = 0; v < aux_obj->face_table[f].num_vertices; v++) {
+		        v_index = aux_obj->face_table[f].vertex_table[v];
+		        glVertex3d(aux_obj->vertex_table[v_index].coord.x,
+		                aux_obj->vertex_table[v_index].coord.y,
+		                aux_obj->vertex_table[v_index].coord.z);
 
-            }
-            glEnd();
+            	    }
+                   glEnd();
+               }
+           }
         }
+        else{
+	    glLoadMatrixf(_selected_camera->matrixcsrptr->values);
+	    glMultMatrixf(aux_obj->matrixptr->values);
+	    for (f = 0; f < aux_obj->num_faces; f++) {
+            glBegin(GL_POLYGON);
+		    for (v = 0; v < aux_obj->face_table[f].num_vertices; v++) {
+		        v_index = aux_obj->face_table[f].vertex_table[v];
+		        glVertex3d(aux_obj->vertex_table[v_index].coord.x,
+		                aux_obj->vertex_table[v_index].coord.y,
+		                aux_obj->vertex_table[v_index].coord.z);
+
+		    }
+                   glEnd();
+            }
+        }
+        
         aux_obj = aux_obj->next;
+    }
+    while (aux_cam != 0) {
+        /* We will draw the cameras blue */
+        glColor3f(0.0,0.0,KG_COL_NONSELECTED_B);
+        
+        if (modo == CAMARAOBJETO){
+        	glLoadMatrixf(_selected_object->matrixptr->values);
+        	glMultMatrixf(aux_cam->matrixobjptr->values);
+		/* Draw the camera; for each face create a new polygon with the corresponding vertices */
+		for (f = 0; f < aux_cam->num_faces; f++) {
+		    glBegin(GL_POLYGON);
+		    for (v = 0; v < aux_cam->face_table[f].num_vertices; v++) {
+		        v_index = aux_cam->face_table[f].vertex_table[v];
+		        glVertex3d(aux_cam->vertex_table[v_index].coord.x,
+		                aux_cam->vertex_table[v_index].coord.y,
+		                aux_cam->vertex_table[v_index].coord.z);
+            	    }
+                   glEnd();
+                   }
+               aux_cam = aux_cam->next;
+        }
+        else{
+        	glLoadMatrixf(_selected_camera->matrixcsrptr->values);
+        	/*If we are viewing from the camera we have to check not to draw the selected camera*/
+        	if(aux_cam != _selected_camera){
+        	glMultMatrixf(aux_cam->matrixobjptr->values);
+		/* Draw the camera; for each face create a new polygon with the corresponding vertices */
+		for (f = 0; f < aux_cam->num_faces; f++) {
+		    glBegin(GL_POLYGON);
+		    for (v = 0; v < aux_cam->face_table[f].num_vertices; v++) {
+		        v_index = aux_cam->face_table[f].vertex_table[v];
+		        glVertex3d(aux_cam->vertex_table[v_index].coord.x,
+		                aux_cam->vertex_table[v_index].coord.y,
+		                aux_cam->vertex_table[v_index].coord.z);
+            	    }
+                   glEnd();
+                   }
+        	}
+               aux_cam = aux_cam->next;
+        }
+        
     }
     /*Do the actual drawing*/
     glFlush();

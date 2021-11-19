@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE visitas SYSTEM "libro_visitas.dtd">
+<visitas ult_id="visita6">
+    <visita id="visita0">
+        <fecha>2011/09/14 12:34</fecha>
+        <nombre>Ametz</nombre>
+        <comentario>Hola mundo!</comentario>
+    </visita>
+    <visita id="visita1">
+        <fecha>2011/09/14 17:48</fecha>
+        <nombre>Asier</nombre>
+        <email>asier@ejemplo.net</email>
+        <comentario>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ipsam nostrum voluptatem corporis officia eos id nihil, fugiat beatae optio veniam. Officiis eius quis ad, sequi tempore, quaerat iure blanditiis non sit molestiae veniam harum dolorum dolorem odio. Impedit, laborum quae!</comentario>
+    </visita>   
+    <visita id="visita2">
+        <fecha>2021/11/13 21:12</fecha>
+        <nombre>Iker</nombre>
+        <comentario>okey, comment</comentario>
+    </visita>
+    <visita id="visita3">
+        <fecha>2021/11/13 21:14</fecha>
+        <nombre>Blai</nombre>
+        <email>blaiot@github.cat</email>
+        <comentario>M'agrada el pa amb tomàquet </comentario>
+    </visita>
+    <visita id="visita4">
+        <fecha>2021/11/15 09:56</fecha>
+        <nombre>Alvaro</nombre>
+        <comentario>Comentario de Alvaro</comentario>
+    </visita>
+<visita id="visita5"><fecha>2021/11/15 10:27</fecha><nombre>Rodri</nombre><email>a@gmail.com</email><comentario>COmentario</comentario></visita><visita id="visita6"><fecha>2021/11/15 10:28</fecha><nombre>a</nombre><comentario>a</comentario></visita></visitas>

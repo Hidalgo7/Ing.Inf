@@ -5,6 +5,7 @@
 #include "display.h"
 #include "io.h"
 #include "definitions.h"
+#include "load_obj.h"
 
 
 /** GLOBAL VARIABLES **/
@@ -17,8 +18,8 @@ GLdouble _ortho_z_min,_ortho_z_max;         /*Variables for the control of the o
 object3d * _first_object= 0;                /*List of objects*/
 object3d * _selected_object = 0;            /*Object currently selected*/
     
-camera * _first_camera = 0;		     /*We define the default camera*/
-camera * _selected_camera = 0;
+camera * _first_camera = 0;		     /*List of cameras*/
+camera * _selected_camera = 0;	     /*Selected camera*/
 GLdouble zoom = 1;
 
 /** GENERAL INITIALIZATION **/
@@ -53,6 +54,16 @@ void initialization (){
     
     _first_camera->matrixcsrptr = m1;
     _first_camera->matrixobjptr = m2;
+    
+    _first_camera->proyection[0] = -0.1;
+    _first_camera->proyection[1] = 0.1;
+    _first_camera->proyection[2] = -0.1;
+    _first_camera->proyection[3] = 0.1;
+    _first_camera->proyection[4] = 0.1;
+    _first_camera->proyection[5] = 10000;
+    cargar_obj_camara(_first_camera);
+    
+    _first_camera->next = 0;
     _selected_camera = _first_camera;
 
     /*Definition of the method to draw the objects*/

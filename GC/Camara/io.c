@@ -12,14 +12,45 @@ extern camera * _selected_camera;
 extern GLdouble _ortho_x_min,_ortho_x_max;
 extern GLdouble _ortho_y_min,_ortho_y_max;
 extern GLdouble _ortho_z_min,_ortho_z_max;
-extern GLdouble zoom;
 
 int rotar = 0;
 int trasladar = 1;
 int escalar = 0;
 
 int referencia = 0;
-char modo = 0;
+int modo = 0;
+
+int proyection = 1;
+int vista = 0;
+
+void cargar_obj_camara(camera *cam){
+    object3d auxiliar_object;
+    read_wavefront("camara.obj", &auxiliar_object);
+
+    /*There is not error treatment because camara.obj will always be there*/
+
+    cam->face_table = auxiliar_object.face_table;
+    cam->num_faces = auxiliar_object.num_faces;
+    cam->vertex_table = auxiliar_object.vertex_table;
+    cam->num_vertices = auxiliar_object.num_vertices;
+    cam->max = auxiliar_object.max;
+    cam->min = auxiliar_object.min;
+
+}
+
+void mirar_obj_selec(){
+		vector3 obj,cam;
+		obj.x = _selected_object->matrixptr->values[12];
+		obj.y = _selected_object->matrixptr->values[13];
+		obj.z = _selected_object->matrixptr->values[14];
+		cam.x = _selected_camera->matrixobjptr->values[12];
+		cam.y = _selected_camera->matrixobjptr->values[13];
+		cam.z = _selected_camera->matrixobjptr->values[14];
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		gluLookAt(cam.x,cam.y,cam.z,obj.x,obj.y,obj.z,0,1,0);
+		glGetFloatv(GL_MODELVIEW_MATRIX,_selected_camera->matrixcsrptr->values);
+}
 
 void get_matriz_objeto(GLfloat* m1, vector3* e,GLfloat* m2){
     for(int i = 0; i < 3; i++){
@@ -118,8 +149,7 @@ void keyboard(unsigned char key, int x, int y) {
 	case 'N':
 	{
 		auxiliar_camera = malloc( sizeof(camera) );
-		GLfloat matriz_referencia[16];
-		vector3* e;
+		vector3* e = malloc( sizeof(vector3) );
 		e->x = 10;
 		e->y = 15;
 		e->z = 10;
@@ -134,6 +164,15 @@ void keyboard(unsigned char key, int x, int y) {
 		auxiliar_camera->matrixcsrptr = m1;
 		auxiliar_camera->matrixobjptr = m2;
 		
+		auxiliar_camera->proyection[0] = -0.1;
+		auxiliar_camera->proyection[1] = 0.1;
+		auxiliar_camera->proyection[2] = -0.1;
+		auxiliar_camera->proyection[3] = 0.1;
+		auxiliar_camera->proyection[4] = 0.1;
+		auxiliar_camera->proyection[5] = 10000;
+		
+		cargar_obj_camara(auxiliar_camera);
+		
 		auxiliar_camera->next = _first_camera;
 		_first_camera = auxiliar_camera;
 		_selected_camera = _first_camera;
@@ -144,19 +183,32 @@ void keyboard(unsigned char key, int x, int y) {
 		_selected_object = _selected_object->next;
 		/*The selection is circular, thus if we move out of the list we go back to the first element*/
 		if (_selected_object == 0) _selected_object = _first_object;
+		if(vista == ANALISIS){
+			mirar_obj_selec();
+		}
 	     }
 	     else{
 		printf("No hay ningun objeto cargado\n");
              }
-	     break;
+	     break; 
 	
 	case 'k':
-	case 'K':
-	     if(_selected_camera != NULL){
 	     	_selected_camera = _selected_camera->next;
 	     	if(_selected_camera == 0) _selected_camera = _first_camera;
+	     	if (vista == ANALISIS){
+	     		mirar_obj_selec();
+	     	}
+	     	break;
+	case 'K':
+	     if (modo != CAMARAOBJETO){
+	     	modo = CAMARAOBJETO;
+	     	printf("Punto de vista del objeto\n");
 	     }
-
+	     else{
+	     	modo = CAMARA;
+	     	printf("Modo: Camara\n");
+	     }
+	     break;
 	case 127: /* <SUPR> */
 	if(_selected_object != NULL){
 		/*Erasing an object depends on whether it is the first one or not*/
@@ -193,6 +245,10 @@ void keyboard(unsigned char key, int x, int y) {
 		    /*and update the selection*/
 		    _selected_object = auxiliar_object;
 		}
+		if (vista == ANALISIS){
+			mirar_obj_selec();
+		}
+
 	}
 	break;
     case 'o':
@@ -207,6 +263,29 @@ void keyboard(unsigned char key, int x, int y) {
     	if(modo != CAMARA){
     		modo = CAMARA;
     		printf("Modo: Camara\n");
+    	}
+    	break;
+    	
+    case 'p':
+    case 'P':
+    	proyection = 1 - proyection;
+    	if(proyection){
+    		printf("Modo de vista: Perspectiva\n");
+    		_selected_camera->proyection[0] = -0.1;
+    		_selected_camera->proyection[1] = 0.1;
+    		_selected_camera->proyection[2] = -0.1;
+    		_selected_camera->proyection[3] = 0.1;
+    		_selected_camera->proyection[4] = 0.1;
+    		_selected_camera->proyection[5] = 10000;
+    	}
+    	else{
+    		printf("Modo de vista: Paralelo\n");
+    		_selected_camera->proyection[0] = _ortho_x_min;
+    		_selected_camera->proyection[1] = _ortho_x_max;
+    		_selected_camera->proyection[2] = _ortho_y_min;
+    		_selected_camera->proyection[3] = _ortho_y_max;
+    		_selected_camera->proyection[4] = 0;
+    		_selected_camera->proyection[5] = _ortho_z_max;
     	}
     	break;
     case '-':
@@ -225,22 +304,29 @@ void keyboard(unsigned char key, int x, int y) {
             _ortho_y_min = midy - he/2;
         }
         */
-        zoom += 0.1;
-        if (escalar){
-	    	GLfloat matriz_rotada[16];
-	    	matrix *m = _selected_object->matrixptr;
-	    	glMatrixMode(GL_MODELVIEW);
-		glLoadMatrixf(m->values);
-	    	glScalef(0.8,0.8,0.8);
-	    	glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada);
-		
-		matrix *sig_matriz = malloc(sizeof (matrix));
-		for(int i = 0; i < 16; i++){
-			sig_matriz->values[i] = matriz_rotada[i];
-		}
-		sig_matriz->sigptr = m;
-		_selected_object->matrixptr = sig_matriz;
+        if(modo == CAMARA){
+        	_selected_camera->proyection[0] = _selected_camera->proyection[0]-0.01;
+        	_selected_camera->proyection[1] = _selected_camera->proyection[1]+0.01;
+        	_selected_camera->proyection[2] = _selected_camera->proyection[2]-0.01;
+        	_selected_camera->proyection[3] = _selected_camera->proyection[3]+0.01;
         }
+        if(modo == OBJETO){
+		if (escalar){
+		    	GLfloat matriz_rotada[16];
+		    	matrix *m = _selected_object->matrixptr;
+		    	glMatrixMode(GL_MODELVIEW);
+			glLoadMatrixf(m->values);
+		    	glScalef(0.8,0.8,0.8);
+		    	glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada);
+			
+			matrix *sig_matriz = malloc(sizeof (matrix));
+			for(int i = 0; i < 16; i++){
+				sig_matriz->values[i] = matriz_rotada[i];
+			}
+			sig_matriz->sigptr = m;
+			_selected_object->matrixptr = sig_matriz;
+		}
+	}
         break;
         
 
@@ -261,27 +347,32 @@ void keyboard(unsigned char key, int x, int y) {
             _ortho_y_min = midy - he/2;
         }
         */
-        if(zoom > 0.1){
-                zoom -= 0.1;
+        if(modo == CAMARA){
+        	if(escalar){
+        	_selected_camera->proyection[0] = _selected_camera->proyection[0]+0.01;
+        	_selected_camera->proyection[1] = _selected_camera->proyection[1]-0.01;
+        	_selected_camera->proyection[2] = _selected_camera->proyection[2]+0.01;
+        	_selected_camera->proyection[3] = _selected_camera->proyection[3]-0.01;
+        	}
         }
-        else if(zoom > 0.000001){
-        	zoom -= 0.000001;
+        if(modo == OBJETO){
+        	if (escalar){
+		    	GLfloat matriz_rotada[16];
+		    	matrix *m = _selected_object->matrixptr;
+		    	glMatrixMode(GL_MODELVIEW);
+			glLoadMatrixf(m->values);
+		    	glScalef(1.25,1.25,1.25);
+		    	glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada);
+			
+			matrix *sig_matriz = malloc(sizeof (matrix));
+			for(int i = 0; i < 16; i++){
+				sig_matriz->values[i] = matriz_rotada[i];
+			}
+			sig_matriz->sigptr = m;
+			_selected_object->matrixptr = sig_matriz;
+        	}
         }
-        if (escalar){
-	    	GLfloat matriz_rotada[16];
-	    	matrix *m = _selected_object->matrixptr;
-	    	glMatrixMode(GL_MODELVIEW);
-		glLoadMatrixf(m->values);
-	    	glScalef(1.25,1.25,1.25);
-	    	glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada);
-		
-		matrix *sig_matriz = malloc(sizeof (matrix));
-		for(int i = 0; i < 16; i++){
-			sig_matriz->values[i] = matriz_rotada[i];
-		}
-		sig_matriz->sigptr = m;
-		_selected_object->matrixptr = sig_matriz;
-        }
+       
         break;
 
     case '?':
@@ -290,17 +381,35 @@ void keyboard(unsigned char key, int x, int y) {
         
     case 'g':
     case 'G':
-    	if(referencia != GLOBAL){
-    		referencia = GLOBAL;
-    		printf("Sistema de referencia: Global\n");
+    	if (modo == CAMARA){
+    		if(vista != ANALISIS){
+    			vista = ANALISIS;
+    			printf("Vista de la camara: Analisis\n");
+    			mirar_obj_selec();
+    		}
+    	}
+    	else if(modo == OBJETO){
+	    	if(referencia != GLOBAL){
+	    		referencia = GLOBAL;
+	    		printf("Sistema de referencia: Global\n");
+	    	}
     	}
     	break;
     case 'l':
     case 'L':
-    	if(referencia != LOCAL){
-    		referencia = LOCAL;
-    		printf("Sistema de referencia: Local\n");
+    	if (modo == CAMARA){
+    		if(vista != VUELO){
+    			vista = VUELO;
+    			printf("Vista de la camara: Vuelo\n");
+    		}
     	}
+    	else if (modo == OBJETO){
+    		if(referencia != LOCAL){
+    			referencia = LOCAL;
+    			printf("Sistema de referencia: Local\n");
+    		}
+    	}
+    	
     	break;
     	
     case 'r':
@@ -335,21 +444,11 @@ void keyboard(unsigned char key, int x, int y) {
     	}
     	break;
     case 26:
-    	if (modo == OBJETO){
-		if(_selected_object != 0){
-		    	if(_selected_object->matrixptr->sigptr != 0){
-		    		_selected_object->matrixptr = _selected_object->matrixptr->sigptr;
-		    	}
+	if(_selected_object != 0){
+	    	if(_selected_object->matrixptr->sigptr != 0){
+	    		_selected_object->matrixptr = _selected_object->matrixptr->sigptr;
 	    	}
-	}
-	else if (modo == CAMARA){
-		if (_selected_camera != 0){
-			if(_selected_camera->matrixcsrptr->sigptr != NULL){
-				_selected_camera->matrixcsrptr = _selected_camera->matrixcsrptr->sigptr;
-				_selected_camera->matrixobjptr = _selected_camera->matrixobjptr->sigptr;
-			}
-		}
-	}
+    	}
     	break;
     case 27: /* <ESC> */
         exit(0);
@@ -358,7 +457,7 @@ void keyboard(unsigned char key, int x, int y) {
     default:
         /*In the default case we just print the code of the key. This is usefull to define new cases*/
         printf("%d %c\n", key, key);
-        printf("keyboard");
+        printf("keyboard\n");
     }
     fflush(stdout);
     /*In case we have do any modification affecting the displaying of the object, we redraw them*/
@@ -374,7 +473,7 @@ void special(int key, int x, int y) {
     switch (key){
     case 100: //LEFT
     {	
-    	if(modo == OBJETO){
+    	if(modo == OBJETO || modo == CAMARAOBJETO){
 	    	GLfloat matriz_rotada[16];
 	    	matrix *m = _selected_object->matrixptr;
 	    	glMatrixMode(GL_MODELVIEW);
@@ -414,28 +513,40 @@ void special(int key, int x, int y) {
 		matrix *sig_matriz1 = malloc(sizeof (matrix));
 		matrix *sig_matriz2 = malloc(sizeof (matrix));
 		glMatrixMode(GL_MODELVIEW);
-		if(rotar){
-			glLoadMatrixf(m1->values);
+		if(vista == ANALISIS){
+			vector3 e;
+			e.x = _selected_object->matrixptr->values[12];
+			e.y = _selected_object->matrixptr->values[13];
+			e.z = _selected_object->matrixptr->values[14];
+			glLoadIdentity();
+			glTranslatef(e.x,e.y,e.z);
 			glRotatef(10,0,-1,0);
+			glTranslatef(-e.x,-e.y,-e.z);
+			glMultMatrixf(m1->values);
 			glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada1);
-			glLoadIdentity();
+			glLoadMatrixf(m2->values);
+			glTranslatef(e.x,e.y,e.z);
 			glRotatef(10,0,1,0);
-			glMultMatrixf(m2->values);
+			glTranslatef(-e.x,-e.y,-e.z);
 			glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada2);
 		}
-		else if(trasladar){
-			glLoadMatrixf(m1->values);
-			glTranslatef(-1,0,0);
-			glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada1);
-			glLoadIdentity();
-			glTranslatef(1,0,0);
-			glMultMatrixf(m2->values);
-			glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada2);
-		}
-		else if(escalar){
-			printf("No es posible escalar la camara");
+		else if(vista == VUELO){
+			if(rotar || trasladar){
+				glLoadMatrixf(m1->values);
+				glRotatef(10,0,1,0);
+				glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada1);
+				glLoadIdentity();
+				glRotatef(10,0,-1,0);
+				glMultMatrixf(m2->values);
+				glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada2);
+			}
+			else if(escalar){
+				_selected_camera->proyection[0] = _selected_camera->proyection[0]+0.001;
+        			_selected_camera->proyection[1] = _selected_camera->proyection[1]+0.001;
 			break;
+			}
 		}
+		
 		
 		for(int i = 0; i < 16; i++){
 			sig_matriz1->values[i] = matriz_rotada1[i];
@@ -451,7 +562,7 @@ void special(int key, int x, int y) {
     }
     case 101: //UP
     {
-    	if(modo == OBJETO){
+    	if(modo == OBJETO || modo == CAMARAOBJETO){
 	    	GLfloat matriz_rotada[16];
 	    	matrix *m = _selected_object->matrixptr;
 	    	glMatrixMode(GL_MODELVIEW);
@@ -493,28 +604,40 @@ void special(int key, int x, int y) {
 		matrix *sig_matriz1 = malloc(sizeof (matrix));
 		matrix *sig_matriz2 = malloc(sizeof (matrix));
 		glMatrixMode(GL_MODELVIEW);
-		if(rotar){
-			glLoadMatrixf(m1->values);
-			glRotatef(10,1,0,0);
-			glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada1);
+		if(vista == ANALISIS){
+			vector3 e;
+			e.x = _selected_object->matrixptr->values[12];
+			e.y = _selected_object->matrixptr->values[13];
+			e.z = _selected_object->matrixptr->values[14];
 			glLoadIdentity();
+			glTranslatef(e.x,e.y,e.z);
 			glRotatef(10,-1,0,0);
-			glMultMatrixf(m2->values);
-			glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada2);
-		}
-		else if(trasladar){
-			glLoadMatrixf(m1->values);
-			glTranslatef(0,1,0);
+			glTranslatef(-e.x,-e.y,-e.z);
+			glMultMatrixf(m1->values);
 			glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada1);
-			glLoadIdentity();
-			glTranslatef(0,-1,0);
-			glMultMatrixf(m2->values);
+			glLoadMatrixf(m2->values);
+			glTranslatef(e.x,e.y,e.z);
+			glRotatef(10,1,0,0);
+			glTranslatef(-e.x,-e.y,-e.z);
 			glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada2);
 		}
-		else if(escalar){
-			printf("No es posible escalar la camara");
-			break;
+		else if (vista == VUELO){
+			if(rotar || trasladar){
+				glLoadMatrixf(m1->values);
+				glRotatef(10,1,0,0);
+				glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada1);
+				glLoadIdentity();
+				glRotatef(10,-1,0,0);
+				glMultMatrixf(m2->values);
+				glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada2);
+			}
+			else if(escalar){
+				_selected_camera->proyection[2] = _selected_camera->proyection[2]+0.001;
+        			_selected_camera->proyection[3] = _selected_camera->proyection[3]+0.001;
+				break;
+			}
 		}
+		
 		
 		for(int i = 0; i < 16; i++){
 			sig_matriz1->values[i] = matriz_rotada1[i];
@@ -530,7 +653,7 @@ void special(int key, int x, int y) {
     }
     case 102: //RIGHT
     {
-    	if(modo == OBJETO){
+    	if(modo == OBJETO || modo == CAMARAOBJETO){
 	    	GLfloat matriz_rotada[16];
 	    	matrix *m = _selected_object->matrixptr;
 	    	glMatrixMode(GL_MODELVIEW);
@@ -572,27 +695,38 @@ void special(int key, int x, int y) {
 		matrix *sig_matriz1 = malloc(sizeof (matrix));
 		matrix *sig_matriz2 = malloc(sizeof (matrix));
 		glMatrixMode(GL_MODELVIEW);
-		if(rotar){
-			glLoadMatrixf(m1->values);
+		if(vista == ANALISIS){
+			vector3 e;
+			e.x = _selected_object->matrixptr->values[12];
+			e.y = _selected_object->matrixptr->values[13];
+			e.z = _selected_object->matrixptr->values[14];
+			glLoadIdentity();
+			glTranslatef(e.x,e.y,e.z);
 			glRotatef(10,0,1,0);
+			glTranslatef(-e.x,-e.y,-e.z);
+			glMultMatrixf(m1->values);
 			glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada1);
-			glLoadIdentity();
+			glLoadMatrixf(m2->values);
+			glTranslatef(e.x,e.y,e.z);
 			glRotatef(10,0,-1,0);
-			glMultMatrixf(m2->values);
+			glTranslatef(-e.x,-e.y,-e.z);
 			glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada2);
 		}
-		else if(trasladar){
-			glLoadMatrixf(m1->values);
-			glTranslatef(1,0,0);
-			glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada1);
-			glLoadIdentity();
-			glTranslatef(-1,0,0);
-			glMultMatrixf(m2->values);
-			glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada2);
-		}
-		else if(escalar){
-			printf("No es posible escalar la camara");
-			break;
+		else if(vista == VUELO){
+			if(rotar || trasladar){
+				glLoadMatrixf(m1->values);
+				glRotatef(10,0,-1,0);
+				glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada1);
+				glLoadIdentity();
+				glRotatef(10,0,1,0);
+				glMultMatrixf(m2->values);
+				glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada2);
+			}
+			else if(escalar){
+				_selected_camera->proyection[0] = _selected_camera->proyection[0]+0.001;
+				_selected_camera->proyection[1] = _selected_camera->proyection[1]+0.001;
+				break;
+			}
 		}
 		
 		for(int i = 0; i < 16; i++){
@@ -609,7 +743,7 @@ void special(int key, int x, int y) {
     }
     case 103: //DOWN
     {
-    	if(modo == OBJETO){
+    	if(modo == OBJETO || modo == CAMARAOBJETO){
 	    	GLfloat matriz_rotada[16];
 	    	matrix *m = _selected_object->matrixptr;
 	    	glMatrixMode(GL_MODELVIEW);
@@ -652,29 +786,39 @@ void special(int key, int x, int y) {
 		matrix *sig_matriz1 = malloc(sizeof (matrix));
 		matrix *sig_matriz2 = malloc(sizeof (matrix));
 		glMatrixMode(GL_MODELVIEW);
-		if(rotar){
-			glLoadMatrixf(m1->values);
-			glRotatef(10,-1,0,0);
-			glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada1);
+		if(vista == ANALISIS){
+			vector3 e;
+			e.x = _selected_object->matrixptr->values[12];
+			e.y = _selected_object->matrixptr->values[13];
+			e.z = _selected_object->matrixptr->values[14];
 			glLoadIdentity();
+			glTranslatef(e.x,e.y,e.z);
 			glRotatef(10,1,0,0);
-			glMultMatrixf(m2->values);
-			glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada2);
-		}
-		else if(trasladar){
-			glLoadMatrixf(m1->values);
-			glTranslatef(0,-1,0);
+			glTranslatef(-e.x,-e.y,-e.z);
+			glMultMatrixf(m1->values);
 			glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada1);
-			glLoadIdentity();
-			glTranslatef(0,1,0);
-			glMultMatrixf(m2->values);
+			glLoadMatrixf(m2->values);
+			glTranslatef(e.x,e.y,e.z);
+			glRotatef(10,-1,0,0);
+			glTranslatef(-e.x,-e.y,-e.z);
 			glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada2);
 		}
-		else if(escalar){
-			printf("No es posible escalar la camara");
-			break;
+		else if(vista == VUELO){
+			if(rotar || trasladar){
+				glLoadMatrixf(m1->values);
+				glRotatef(10,-1,0,0);
+				glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada1);
+				glLoadIdentity();
+				glRotatef(10,1,0,0);
+				glMultMatrixf(m2->values);
+				glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada2);
+			}
+			else if(escalar){
+				_selected_camera->proyection[2] = _selected_camera->proyection[2]-0.001;
+				_selected_camera->proyection[3] = _selected_camera->proyection[3]-0.001;
+				break;
+			}
 		}
-		
 		for(int i = 0; i < 16; i++){
 			sig_matriz1->values[i] = matriz_rotada1[i];
 			sig_matriz2->values[i] = matriz_rotada2[i];
@@ -690,7 +834,7 @@ void special(int key, int x, int y) {
     
     case 104: //Re Pag
     {
-    	if (modo == OBJETO){
+    	if (modo == OBJETO || modo == CAMARAOBJETO){
 	    	GLfloat matriz_rotada[16];
 	    	matrix *m = _selected_object->matrixptr;
 	    	glMatrixMode(GL_MODELVIEW);
@@ -744,15 +888,16 @@ void special(int key, int x, int y) {
 		}
 		else if(trasladar){
 			glLoadMatrixf(m1->values);
-			glTranslatef(0,0,-1);
+			glTranslatef(0,0,1);
 			glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada1);
 			glLoadIdentity();
-			glTranslatef(0,0,1);
+			glTranslatef(0,0,-1);
 			glMultMatrixf(m2->values);
 			glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada2);
 		}
 		else if(escalar){
-			printf("No es posible escalar la camara");
+			_selected_camera->proyection[4] = _selected_camera->proyection[4]+0.001;
+        		_selected_camera->proyection[5] = _selected_camera->proyection[5]+100;
 			break;
 		}
 		
@@ -770,7 +915,7 @@ void special(int key, int x, int y) {
     }
     case 105: //Av Pag
     {
-    	if (modo == OBJETO){
+    	if (modo == OBJETO || modo == CAMARAOBJETO){
 	    	GLfloat matriz_rotada[16];
 	    	matrix *m = _selected_object->matrixptr;
 	    	glMatrixMode(GL_MODELVIEW);
@@ -824,16 +969,16 @@ void special(int key, int x, int y) {
 		}
 		else if(trasladar){
 			glLoadMatrixf(m1->values);
-			glTranslatef(0,0,1);
+			glTranslatef(0,0,-1);
 			glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada1);
 			glLoadIdentity();
-			glTranslatef(0,0,-1);
+			glTranslatef(0,0,1);
 			glMultMatrixf(m2->values);
 			glGetFloatv(GL_MODELVIEW_MATRIX,matriz_rotada2);
 		}
 		else if(escalar){
-			printf("No es posible escalar la camara");
-			break;
+        		_selected_camera->proyection[4] = _selected_camera->proyection[4]-0.001;
+        		_selected_camera->proyection[5] = _selected_camera->proyection[5]-100;
 		}
 		
 		for(int i = 0; i < 16; i++){
@@ -851,7 +996,7 @@ void special(int key, int x, int y) {
     default:
         /*In the default case we just print the code of the key. This is usefull to define new cases*/
         printf("%d %c\n", key, key);
-        printf("special");
+        printf("special\n");
     }
     glutPostRedisplay();
 }

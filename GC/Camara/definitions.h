@@ -61,6 +61,13 @@
 
 #define OBJETO                              0
 #define CAMARA                              1
+#define CAMARAOBJETO                        2
+
+#define PERSPECTIVA                         0
+#define PARALELO                            1
+
+#define VUELO                               0
+#define ANALISIS                            1
 
 /** STRUCTURES **/
 
@@ -126,6 +133,7 @@ struct camera {
     point3 max; 
     matrix *matrixobjptr;
     matrix *matrixcsrptr;
+    GLfloat proyection[6];
     struct camera *next;
 };  
 
