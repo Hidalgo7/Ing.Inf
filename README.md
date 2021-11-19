@@ -5,5 +5,5 @@ Subjects:
 
 MAC --> Abstract Models of Computation  
 GC --> Graphics by Computer  
-SAR --> Network Services and Applications
+SAR --> Network Services and Applications  
 MDD --> Machine Learning
