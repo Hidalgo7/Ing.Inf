@@ -5,17 +5,17 @@
 
 /** DEFINITIONS **/
 
-#define KG_WINDOW_TITLE                     "Práctica GPO"
+#define KG_WINDOW_TITLE                     "Practica GPO"
 #define KG_WINDOW_WIDTH                     600
 #define KG_WINDOW_HEIGHT                    400
 #define KG_WINDOW_X                         50
 #define KG_WINDOW_Y                         50
 
-#define KG_MSSG_SELECT_FILE                 "Idatz ezazu fitxategiaren path-a: "
-#define KG_MSSG_FILENOTFOUND                "Fitxategi hori ez da existitzen!!"
-#define KG_MSSG_INVALIDFILE                 "Arazoren bat egon da fitxategiarekin ..."
-#define KG_MSSG_EMPTYFILE                   "Fitxategia hutsik dago"
-#define KG_MSSG_FILEREAD                    "Fitxategiaren irakurketa buruta"
+#define KG_MSSG_SELECT_FILE                 "Escribe el path del archivo: "
+#define KG_MSSG_FILENOTFOUND                "Ese fichero no existe"
+#define KG_MSSG_INVALIDFILE                 "Ha ocurrido un problema con el archivo..."
+#define KG_MSSG_EMPTYFILE                   "El fichero esta vacio"
+#define KG_MSSG_FILEREAD                    "Fichero leido"
 
 #define KG_STEP_MOVE                        5.0f
 #define KG_STEP_ROTATE                      10.0f

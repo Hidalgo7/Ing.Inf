@@ -63,15 +63,18 @@ def sat_preprocessing(num_variables, clauses, assignment):
         
         update = update1 or update2
         if [] in clauses:
-            return ([[1], [-1]], assignment)
+            return [[1],[-1]],assignment
         else:
-            if (clauses == []) or (not update):
-                     return (clauses, assignment)  
+            if (clauses == []):
+                return clauses,assignment
+    return clauses,assignment
+        
 
     
 
 def test():
     assert ([], [None, 1]) == sat_preprocessing(1, [[1]], [None, None])
+    
     
     
     assert ([[1],[-1]]) == sat_preprocessing(1, [[1], [-1]], [None,None])[0]
@@ -105,6 +108,7 @@ def test():
                                 [3, 5, 2, -1, 4], [1], [2, 1, 4, 3, 6],
                                 [-1, -5, 2, 3], [-3, 2, -5, 6, -4, 7]], 
                                    [None, None, None, None, None, None, None, None] )
+    print(ans)
     assert ans[0] == []
     assert ans[1][1] == 1
     assert ans[1][4] == 1

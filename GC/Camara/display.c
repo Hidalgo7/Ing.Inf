@@ -18,7 +18,8 @@ extern camera *_selected_camera;
 extern int modo;
 extern int proyection;
 
-void get_matriz_csr(GLfloat* m1,GLfloat* m2){
+void get_matriz_csr(GLfloat* m1,GLfloat* m2)
+{
     for(int i = 0; i < 3; i++){
     	for (int j = 0; j < 3;j++){
     			m2[i+4*j] = m1[4*i+j];
@@ -32,6 +33,40 @@ void get_matriz_csr(GLfloat* m1,GLfloat* m2){
     m2[11] = 0;
     m2[15] = 1;
 }
+
+int poligono_delantero(object3d *o,face f){
+	/*First we get the camera location*/
+	vector3 e;
+	e.x = _selected_camera->matrixcsrptr->values[12]; 
+	e.y = _selected_camera->matrixcsrptr->values[15];
+	e.z = _selected_camera->matrixcsrptr->values[14];
+	
+	/*Then, we pass the camera location to the object reference system*/
+	GLfloat csr_objeto[15];
+	get_matriz_csr(_selected_object->matrixptr->values,csr_objeto);
+	e.x = e.x*csr_objeto[0] + e.y*csr_objeto[1] + e.z*csr_objeto[2];
+	e.y = e.x*csr_objeto[4] + e.y*csr_objeto[5] + e.z*csr_objeto[6];
+	e.z = e.x*csr_objeto[8] + e.y*csr_objeto[9] + e.z*csr_objeto[10];
+	
+	/*Now we calculate the vector between the camera and the face*/
+	
+	vector3 v;
+	vertex p_obj = o->vertex_table[f.vertex_table[0]];
+	v.x = e.x - p_obj.coord.x;
+	v.y = e.y - p_obj.coord.y;
+	v.z = e.z - p_obj.coord.z;
+	
+	/*Finally we calculate the escalar product of the normal and the v vector to see the angle between them*/
+	
+	GLfloat escalar = v.x * f.normal->x + v.y * f.normal->y + v.z * f.normal->z;
+	if(escalar > 0){
+		return 0;
+	}
+	else{
+		return 1;
+	}
+}
+
 /**
  * @brief Function to draw the axes
  */
@@ -126,6 +161,8 @@ void display(void) {
            if (aux_obj != _selected_object){
            	glMultMatrixf(aux_obj->matrixptr->values);
            	for (f = 0; f < aux_obj->num_faces; f++) {
+           	    int b = poligono_delantero(aux_obj,aux_obj->face_table[f]);
+           	    printf("%d",b);
 		    glBegin(GL_POLYGON);
 		    for (v = 0; v < aux_obj->face_table[f].num_vertices; v++) {
 		        v_index = aux_obj->face_table[f].vertex_table[v];
@@ -183,6 +220,7 @@ void display(void) {
         	glMultMatrixf(aux_cam->matrixobjptr->values);
 		/* Draw the camera; for each face create a new polygon with the corresponding vertices */
 		for (f = 0; f < aux_cam->num_faces; f++) {
+		    
 		    glBegin(GL_POLYGON);
 		    for (v = 0; v < aux_cam->face_table[f].num_vertices; v++) {
 		        v_index = aux_cam->face_table[f].vertex_table[v];

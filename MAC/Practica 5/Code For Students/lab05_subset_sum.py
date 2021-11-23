@@ -45,14 +45,6 @@ def subset_aux(value,collection,subset):
             
         return sub
     
-        # i = 0
-        # sub = [None]
-        # while i < len(collection) and None in sub:
-        #     sub = subset_aux(value-collection[i],collection[:i] + collection[i+1:],subset + [collection[i]])
-        #     i += 1
-        
-        # return sub
-    
 def test():
     
     # coleccion 0

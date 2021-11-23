@@ -1,5 +1,6 @@
 import os
 from time import time
+from copy import deepcopy
 from tools import list_minisat2list_our_sat
 from pre_processing import sat_preprocessing
       
@@ -8,33 +9,37 @@ def check_SAT(num_variables,clauses,assignment):
         sat = False
         i = 0
         while not sat and i < len(clause):
-            if clause[i] > 0:
-                if assignment[clause[i]] == 1:
-                    sat = True
-            else:
-                if assignment[-clause[i]] == 0:
-                    sat = True
+            if clause[i] is not None:
+                if clause[i] > 0:
+                    if assignment[clause[i]] == 1:
+                        sat = True
+                else:
+                    if assignment[-clause[i]] == 0:
+                        sat = True
             i +=1
         if not sat:
             return "UNSATISFIABLE"
-    return assignment
+    return True
 
 def solve_SAT_aux(num_variables,clauses,assignment):
-    if assignment == [[1],[-1]]:
+    clauses,assignment = sat_preprocessing(num_variables,clauses,assignment)
+    if clauses == [[1],[-1]]:
+        print("DELETED")
         return "UNSATISFIABLE"
-    elif not None in assignment:
+    elif check_SAT(num_variables,clauses,assignment) == True:
         return assignment
     else:
-        while None in assignment[1:]:
+        if None in assignment[1:]:
+            assignment_copy = deepcopy(assignment)
             i = assignment[1:].index(None)
             i += 1
-            assignment[i] = 0
-            sol = check_SAT(num_variables,clauses,assignment)
+            assignment_copy[i] = 0
+            sol = solve_SAT_aux(num_variables,clauses,assignment_copy)
             if sol != "UNSATISFIABLE":
                 return sol
             else:
-                assignment[i] = 1
-                sol = check_SAT(num_variables,clauses,assignment)
+                assignment_copy[i] = 1
+                sol = solve_SAT_aux(num_variables,clauses,assignment_copy)
                 if sol != "UNSATISFIABLE":
                     return sol
         return "UNSATISFIABLE"
@@ -42,7 +47,7 @@ def solve_SAT_aux(num_variables,clauses,assignment):
 def solve_SAT(num_variables, clauses):
    #TODO
    assignment = [None] * (num_variables+1)
-   sat_preprocessing(num_variables,clauses,assignment)
+   clauses,assignment = sat_preprocessing(num_variables,clauses,assignment)
    return solve_SAT_aux(num_variables,clauses,assignment)
    
     
@@ -62,6 +67,7 @@ def test():
                  [None, 1, 0, 0],
                  [None, 1, 1, 0]]
     
+    print(solve_SAT(3,clauses))
     assert solve_SAT(3,clauses) in solutions
     print("-"*40)
     
@@ -82,6 +88,7 @@ def test():
                  [None, 1, None, None],
                  [1, 1, None, None]]
     assert solve_SAT(3,clauses) in solutions
+    print(solve_SAT(3,clauses))
     print("-"*40)
 
     clauses = [[2, 1, 3], [-2, -1, 3], [-2, 3, -1], [-2, -1, 3],
@@ -90,6 +97,7 @@ def test():
                [3, -2, 1], [2, 1, 3], [-3, -1, 2], [-3, -2, 1],
                [-1, 3, -2], [1, 2, -3], [-3, -1, 2], [2, -1, 3]]
     assert solve_SAT(3,clauses) == "UNSATISFIABLE"
+    print(solve_SAT(3,clauses))
     print("-"*40)
      
     clauses = [[4, -18, 19],[3, 18, -5],[-5, -8, -15],[-20, 7, -16],[10, -13, -7],
@@ -112,6 +120,7 @@ def test():
                [-5, -17, -19],[-20, -18, 11],[-9, 1, -5],[-19, 9, 17],[17],[1],
                [4, -16, -5]]
     assert solve_SAT(20, clauses) == "UNSATISFIABLE" 
+    print(solve_SAT(20,clauses))
     print("-"*40)
     print("Tests passed") 
    
@@ -119,6 +128,7 @@ def test():
                [1, -4, -1, -7], [-6, -1], [1], [-7]]
     
     assert solve_SAT(7, clauses) == "UNSATISFIABLE" 
+    print(solve_SAT(7,clauses))
 
     ## Para probar el juego de pruebas
     #tupla = list_minisat2list_our_sat ('instancias/1-unsat.cnf')
@@ -137,7 +147,7 @@ def SAT_solver_time_test():
         elapsed_time = time() - start_time
         print("Elapsed time: " + str(elapsed_time))
 
-SAT_solver_time_test()
+test()
 
 # start_time = time()
 # test()
