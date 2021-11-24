@@ -22,27 +22,32 @@ def check_SAT(num_variables,clauses,assignment):
     return True
 
 def solve_SAT_aux(num_variables,clauses,assignment):
-    clauses,assignment = sat_preprocessing(num_variables,clauses,assignment)
+    print(assignment)
     if clauses == [[1],[-1]]:
-        print("DELETED")
         return "UNSATISFIABLE"
     elif check_SAT(num_variables,clauses,assignment) == True:
         return assignment
     else:
-        if None in assignment[1:]:
-            assignment_copy = deepcopy(assignment)
-            i = assignment[1:].index(None)
+        found = False
+        i = 0
+        while i < len(clauses) and not found:
+            clause = clauses[i]
+            for literal in clause:
+                if assignment[abs(literal)] is None:
+                    valor_literal = abs(literal)
+                    found = True
+            
             i += 1
-            assignment_copy[i] = 0
-            sol = solve_SAT_aux(num_variables,clauses,assignment_copy)
-            if sol != "UNSATISFIABLE":
-                return sol
-            else:
-                assignment_copy[i] = 1
-                sol = solve_SAT_aux(num_variables,clauses,assignment_copy)
-                if sol != "UNSATISFIABLE":
-                    return sol
-        return "UNSATISFIABLE"
+        if found:
+            copy = list(assignment)
+            copy[valor_literal] = 0
+            sol = solve_SAT_aux(num_variables,clauses,copy)
+            if sol == "UNSATISFIABLE":
+                copy[valor_literal] = 1
+                sol = solve_SAT_aux(num_variables,clauses,copy)
+            return sol
+        else:
+            return "UNSATISFIABLE"
     
 def solve_SAT(num_variables, clauses):
    #TODO
@@ -67,7 +72,6 @@ def test():
                  [None, 1, 0, 0],
                  [None, 1, 1, 0]]
     
-    print(solve_SAT(3,clauses))
     assert solve_SAT(3,clauses) in solutions
     print("-"*40)
     
@@ -131,10 +135,7 @@ def test():
     print(solve_SAT(7,clauses))
 
     ## Para probar el juego de pruebas
-    #tupla = list_minisat2list_our_sat ('instancias/1-unsat.cnf')
-  
     
-    #print(solve_SAT(tupla[0], tupla[1]))
     
     
 def SAT_solver_time_test():
@@ -146,8 +147,12 @@ def SAT_solver_time_test():
         print(solve_SAT(tupla[0],tupla[1]))
         elapsed_time = time() - start_time
         print("Elapsed time: " + str(elapsed_time))
+        
+# tupla = list_minisat2list_our_sat ('instancias/8-unsat.cnf')
+# print(solve_SAT(tupla[0], tupla[1]))
 
-test()
+SAT_solver_time_test()
+
 
 # start_time = time()
 # test()

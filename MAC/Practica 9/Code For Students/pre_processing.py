@@ -13,7 +13,35 @@ def actualizar_formula(num_variables,clauses,assignment):
             for clause in f:
                 while i in clause:
                     clause.remove(i)
+    
+    for clause in clauses:
+        redundant = False
+        for literal in clause:
+            if -literal in clause:
+                redundant = True
+
+        if redundant:
+            clauses.remove(clause)
     return f
+
+
+def mismo_signo(num_variables,clauses,assignment):
+    update = False
+    for i in range(1,num_variables):
+        if any(i in clause for clause in clauses) and not any(-i in clause for clause in clauses):
+            assignment[i] = 1
+            update = True
+        elif any(-i in clause for clause in clauses) and not any(i in clause for clause in clauses):
+            assignment[i] = 0
+            update = True
+    
+    if update:
+        nueva_formula = actualizar_formula(num_variables,clauses,assignment)
+        return True,nueva_formula
+    else:
+        return False,clauses
+    
+    
 
 def variable_unica(num_variables, clauses, assignment):
     list = [clause[0] for clause in clauses if len(clause) == 1]
@@ -23,7 +51,7 @@ def variable_unica(num_variables, clauses, assignment):
                 assignment[x] = 1
             else:
                 assignment[-x] = 0
-        nueva_formula = actualizar_formula(num_variables,clauses, assignment)
+        nueva_formula = actualizar_formula(num_variables,clauses,assignment)
         return True,nueva_formula
     else:
         return False,clauses
@@ -52,7 +80,6 @@ def una_aparicion(num_variables,clauses,assignment):
             
 
 def sat_preprocessing(num_variables, clauses, assignment):
-    
     update = True
     while update:
         update = False   
@@ -60,8 +87,9 @@ def sat_preprocessing(num_variables, clauses, assignment):
         # usa funciones auxiliares         
         update1,clauses = variable_unica(num_variables,clauses,assignment)
         update2,clauses = una_aparicion(num_variables,clauses,assignment)
+        update3,clauses = mismo_signo(num_variables,clauses,assignment)
         
-        update = update1 or update2
+        update = update1 or update2 or update3
         if [] in clauses:
             return [[1],[-1]],assignment
         else:
@@ -73,6 +101,9 @@ def sat_preprocessing(num_variables, clauses, assignment):
     
 
 def test():
+    mismo_signo(4, [[4], [-3, -1], [3, -4, 2, 1], [1, -3, 4],
+                                         [-1, -3, -4, 2], [4, 3, 1, 2], [4, 3],
+                                         [1, 3, -4], [3, -4, 1], [-1]], [None, None, None, None, None])
     assert ([], [None, 1]) == sat_preprocessing(1, [[1]], [None, None])
     
     
@@ -100,6 +131,7 @@ def test():
                                 [3, 5, 2, -1, 4], [1], [2, 1, 4, 3, 6],
                                 [-1, -5, 2, 3], [-3, 2, -5, 6, -4]], 
                                    [None, None, None, None, None, None, None])
+    print(ans)
     assert ans[0] == [[5, 6, 2, 4], [3, 5, 2, 4], [-5, 2, 3], [-3, 2, -5, 6, -4]]
     assert ans[1][1] == 1
     
@@ -108,7 +140,6 @@ def test():
                                 [3, 5, 2, -1, 4], [1], [2, 1, 4, 3, 6],
                                 [-1, -5, 2, 3], [-3, 2, -5, 6, -4, 7]], 
                                    [None, None, None, None, None, None, None, None] )
-    print(ans)
     assert ans[0] == []
     assert ans[1][1] == 1
     assert ans[1][4] == 1
@@ -126,5 +157,7 @@ def test():
     assert ans[1][3] == 0
     assert ans[1][5] == 0
     assert ans[1][6] == 1   
+    
+    print(actualizar)
    
-test()
+
