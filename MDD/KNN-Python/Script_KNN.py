@@ -4,6 +4,7 @@ import statistics as st
 import math
 import csv
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 import random
 from sklearn.model_selection import KFold
 
@@ -28,19 +29,26 @@ def main():
     train,test = splitTrainTest(mtcars_normalizado,0.75)
     kFoldCV(mtcars_normalizado,4)
     # Separamos las labels del Test. Es como si no nos las dieran!!
-    true_labels = test.pop('mpg').tolist()
-    # Predecimos el conjunto de test
-    predicted_labels = []
-    K = 6
-    for index in test.index:
-        predicted_labels.append(knn(test.loc[index],train,K))
     
-    test['mpg'] = true_labels
-    test['pred_mpg'] = predicted_labels
-    print(test)
-    # Mostramos por pantalla el Accuracy por ejemplo
-    print("Accuracy conseguido:")
-    print(accuracy(true_labels, predicted_labels))
+    # Predecimos el conjunto de test
+    true_labels = test.pop('mpg').tolist()
+    acc = []
+    for K in range (1,21):
+        predicted_labels = []
+        for index in test.index:
+            predicted_labels.append(knn(test.loc[index],train,K))
+            
+        test['mpg'] = true_labels
+        test['pred_mpg'] = predicted_labels
+        print(test)
+        test.pop('pred_mpg')
+        test.pop('mpg')
+        # Mostramos por pantalla el Accuracy por ejemplo
+        print("Accuracy conseguido: {}".format(accuracy(true_labels, predicted_labels)))
+        acc.append(accuracy(true_labels, predicted_labels))
+        
+    plt.plot(range(1,21),acc)
+    
 
     # Algun grafico? Libreria matplotlib.pyplot
     return(0)
@@ -106,7 +114,6 @@ def knn(newx, data, K):
         else:
             labels[str(data.loc[data.index[x]]['mpg'])] = 1
     newlabel = float(max(labels,key=labels.get))
-    print(newlabel)
     
     return(newlabel)
 
@@ -128,11 +135,10 @@ def accuracy(true, pred):
     for (t,p) in zip(true,pred):
         if t == p:
             cont += 1
-    print(cont)
-    print(len(true))
     acc = cont/len(true)
     return(acc)
 
 if __name__ == '__main__':
-    np.random.seed(25)
+    
+    np.random.seed(100)
     main()

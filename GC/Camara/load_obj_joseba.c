@@ -209,25 +209,26 @@ printf("2 pasada\n");
     	v2.x = p3.coord.x - p1.coord.x;
     	v2.y = p3.coord.y - p1.coord.y;
     	v2.z = p3.coord.z - p1.coord.z;
+    	GLfloat x,y,z;
+    	x = v1.y * v2.z - v2.y * v1.z;
+    	y = -(v1.x * v2.z - v2.x * v1.z);
+    	z = v1.x * v2.y - v2.x * v1.y;
     	
-    	vector3 *n = malloc( sizeof (vector3) );
-    	n->x = v1.y * v2.z - v2.y * v1.z;
-    	n->y = -(v1.x * v2.z - v2.x * v1.z);
-    	n->z = v1.x * v2.y - v2.x * v1.y;
+    	GLfloat length = sqrt(pow(x,2) + pow(y,2) + pow(z,2));
     	
-    	
-    	GLfloat length = sqrt(pow(n->x,2) + pow(n->y,2) + pow(n->z,2));
     	if(length != 0){
-    		n->x = n->x / length;
-    		n->y = n->y / length;
-    		n->z = n->z / length;
+    		x = x / length;
+    		y = y / length;
+    		z = z / length;
     	}
-    	length = sqrt(pow(n->x,2) + pow(n->y,2) + pow(n->z,2));
+    	length = sqrt(pow(x,2) + pow(y,2) + pow(z,2));
     	
-    	act.normal = n;
+    	object_ptr->face_table[i].normal.x = x;
+    	object_ptr->face_table[i].normal.y = y;
+    	object_ptr->face_table[i].normal.z = z;
     	printf("Vector 1: (%.2f,%.2f,%.2f)\n",v1.x,v1.y,v1.z);
     	printf("Vector 2: (%.2f,%.2f,%.2f)\n",v2.x,v2.y,v2.z);
-    	printf("Vector Normal: (%.4f,%.4f,%.4f)\n",n->x,n->y,n->z);
+    	printf("Vector Normal: (%.4f,%.4f,%.4f)\n",object_ptr->face_table[i].normal.x,object_ptr->face_table[i].normal.y,object_ptr->face_table[i].normal.z);
     	printf("Longitud del vector:%.2f\n",length);
     }
     

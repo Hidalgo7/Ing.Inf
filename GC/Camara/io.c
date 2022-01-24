@@ -176,6 +176,10 @@ void keyboard(unsigned char key, int x, int y) {
 		auxiliar_camera->next = _first_camera;
 		_first_camera = auxiliar_camera;
 		_selected_camera = _first_camera;
+		
+		if(vista == ANALISIS){
+			mirar_obj_selec();
+		}
 		break;
 	}
 	case 9: /* <TAB> */

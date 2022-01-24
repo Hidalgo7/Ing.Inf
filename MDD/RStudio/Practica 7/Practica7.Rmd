@@ -1,0 +1,172 @@
+---
+title: "Machine Learning with R software"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+En esta práctica exploraremos por primera vez como es generar modelos mediante software de programación, en concreto en el lenguaje R mediante la intefaz RStudio.
+
+## Dataset de trabajo
+
+Primeramente deberemos inicializar la carpeta de trabajo, en ella estará el fichero iris.csv que contiene el dataset con el cual trabajaremos en este laboratorio
+
+```{r}
+setwd("/home/hidalgo/Ing.Inf/MDD/RStudio")
+```
+
+Una vez en la carpeta de trabajo leeremos el fichero.
+```{r}
+iris<-read.csv("iris.csv", header=TRUE, sep=",")
+```
+Podemos ver que pinta tiene nuestro dataset usando diferentes comandos de R:
+
+* summary() nos dará datos estadísticos para cada columna: media, mín-máx, cuartiles...
+```{r}
+summary(iris)
+```
+
+* names() nos dará el nombre de las columnas de nuestro dataset.
+```{r}
+names(iris)
+```
+Dado que estamos ante un problema de clasificación estas serán nuestras variables predictoras.
+
+* head() nos mostrará cuales son los valores de cada columna para las primeras filas.
+```{r}
+head(iris)
+```
+
+Como hemos podido ver la ultima columna del dataset es la clase del individuo, el nombre de la variedad de flor, y es por supuesto una clase nominal. Para poder trabajar mejor con el dataset convertiremos la variable en numérica.
+
+```{r}
+iris$variety <- as.factor(iris$variety)
+table(iris$variety)
+```
+Como podemos ver tenemos un dataset perfectamente balanceado, con 50 individuos en cada clase,
+
+## Libreria caret
+Para construir nuestro modelo utilizaremos el paquete de R caret, que contiene funciones para clasificación y regresión. Por tanto vamos a importar el paquete con el comando library().
+
+```{r eval=FALSE, echo=FALSE}
+install.packages("caret", dependencies=T)
+```
+```{r results='hide'}
+library(caret)
+```
+
+## Construcción del modelo
+Para empezar determinaremos una semilla inicial, en función de ella se crearán las particiones de train y test para el modelo.
+
+```{r}
+set.seed("1234567890")
+```
+
+Una vez definida la semilla crearemos las particiones con el método createDataPartition()
+
+```{r}
+trainSetIndexes <- createDataPartition(y=iris$variety,p=.66,list=FALSE)
+```
+
+Es importante entender que parámetros recoge esta función y como cambia la salida en función de ellos
+
+* y $\rightarrow$ variable que contiene los elementos a particionar.
+* p $\rightarrow$ porcentaje de los casos que ira al subset de training.
+* list $\rightarrow$ si especificamos FALSE para este parámetro devolverá la particián en una matriz en lugar de en un vector.
+
+Usando la variable en la que guardamos la partición y su negada como índice para el dataset obtenemos las dos particiones.
+
+```{r}
+trainSet <- iris[trainSetIndexes,]
+testSet <- iris[-trainSetIndexes,]
+```
+
+Numero de elementos del subconjunto trainSet: `r nrow(trainSet)`
+
+Numero de elementos del subconjunto testSet: `r nrow(testSet)`
+
+Guardaremos en la variable ctrl los parámetros que tendrá nuestro clasificador, en nuestro caso un KNN.
+
+```{r}
+ctrl <- trainControl("cv", number=10)
+```
+
+* cv $\rightarrow$ método de clasificacion supervisada cross-validation
+* number $\rightarrow$ valor para el hiperparametro del método de clasificación (en el caso del CV el número de hojas).
+
+Por último la función train() es la que genera el clasificador juntando todas las piezas que hemos generado hasta ahora.
+
+```{r}
+KNNModel1 <- train(variety ~ ., data=trainSet, method="knn", tuneLength=5, trControl=ctrl, preProc=c("center","scale"))
+```
+
+La clase a predecir se marca en el primer parametro y separado por el caracter ~ se especifican las predictoras. Estos son los parámetros más importantes que toma:
+
+* method $\rightarrow$ especifica que metodo de clasificación se va a usar para crear el clasificador.
+* tuneLength $\rightarrow$ se usa para especificar para cuantos parámetros diferentes se probará el modelo. En nuestro caso se probarán 5 valores diferentes para K y el modelo se quedará con el que tenga mejor accuracy.
+* trControl $\rightarrow$ trControl especifica que parametros queremos que tenga el clasificador, se usan los parametros ya especificados previamente.
+* preProc $\rightarrow$ expresa el pre procesado previo que se le realiza a nuestros datos antes de entrenar el clasificador.
+
+```{r}
+KNNModel1
+plot(KNNModel1)
+```
+
+Usando el subconjunto de test y el modelo generado podemos ver cual es su fiabilidad para conjunto de individuos nuevo.
+
+```{r}
+KNNPredict1 <- predict(KNNModel1, newdata=testSet)
+confusionMatrix(KNNPredict1, testSet$variety)
+```
+
+Si nos fijamos la matriz de confusión que nos da R está traspuesta en comparación con la que nos devolvía Weka, es decir las columnas son las clases reales y las filas las clases predecidas.
+
+Para un segundo ejemplo, en lugar de usar tuneLength para especificar el número de valores diferentes que tomará el parámetro del modelo, usaremos tuneGrid; con el que podremos elegir con que valores específicos se probará el clasificador.
+
+```{r}
+KNNModel2 <- train(variety ~ ., data=trainSet, method="knn", tuneGrid = expand.grid(k = c(1, 3, 5, 15, 19)), trControl=ctrl, preProc=c("center","scale"))
+KNNModel2
+plot(KNNModel2)
+```
+
+Hemos probado el clasificador para los valores [1,3,5,15,19] y dado que el accuracy más alto se ha conseguido para K=3, como se puede ver en la gráfica, el modelo se ha decantado por ese valor.
+
+```{r}
+KNNPredict2 <- predict(KNNModel2, newdata=testSet)
+confusionMatrix(KNNPredict2, testSet$variety)
+```
+
+# Clasificadores Naïve Bayes y árbol de clasificación
+
+Además del KNN, mediante el paquete caret y la función train se pueden aprender otros clasificadores. Vamos a hacer la prueba para el modelo Bayesiano Naïve Bayes y el árbol de clasificación.
+
+```{r}
+library(naivebayes)
+nb_grid <-   expand.grid(usekernel = c(TRUE, FALSE),
+                         laplace = c(0, 0.5, 1), 
+                         adjust = c(0.75, 1, 1.25, 1.5))
+naiveBayes <- train(variety ~ .,data=trainSet,method="naive_bayes",usepoisson=TRUE,tuneGrid=nb_grid)
+naiveBayes
+plot(naiveBayes)
+
+naiveBayesPredict <- predict(naiveBayes,newdata=testSet)
+confusionMatrix(naiveBayesPredict,testSet$variety)
+
+library(RWeka)
+
+#decisionTree <- train(variety ~ .,data=trainSet,method="J48")
+#decisionTree
+#plot(decisionTree)
+
+#decisionTreePredict <- predict(decisionTree,newdata=testSet)
+#confusionMatrix(decisionTreePredict,testSet$variety)
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

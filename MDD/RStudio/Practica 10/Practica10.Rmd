@@ -1,0 +1,66 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+Para empezar leeremos el dataset food, el mismo con el que estabamos trabajando hasta ahora en Weka.
+```{r include=FALSE}
+food <- read.csv(file="http://www.sc.ehu.es/ccwbayes/docencia/md/selected-dbs/clustering/food.csv",header=TRUE, sep=",")
+```
+```{r eval=FALSE}
+food <- read.csv(file="http://www.sc.ehu.es/ccwbayes/docencia/md/selected-dbs/clustering/
+food.csv",header=TRUE, sep=",")
+```
+\
+Estas son las columnas de nuestro dataset:
+```{r}
+colnames(food)
+```
+\
+Eliminamos la primera columna, que corresponde al nombre de cada comida y ejecutamos el algoritmo k-means. En concreto buscaremos clasificar las instancias en dos clusters (parámetro: centers=2).
+```{r}
+foodNumeric <- food[,-1]
+library(stats)
+kmeans.res <- kmeans(foodNumeric,centers=2)
+```
+\
+Si imprimimos el resultado podremos ver algunos datos sobre los clusters generados: media de las variables para cada cluster, el cluster al que pertenece cada instancia en forma de vector y la cohesion del clustering en función de la suma de cuadrados.
+```{r}
+print(kmeans.res)
+```
+\
+Además podemos acceder a varios componentes del resultado del clustering mediante el token `$`, por ejemplo el vector que indica el cluster de cada instancia (`$cluster`).
+```{r}
+kmeans.res$cluster
+```
+\newpage
+De esta manera podemos combinar nuestro dataset original con la asignación obtenida del k-means.
+```{r}
+foodWithCluster <- cbind(food, cluster=kmeans.res$cluster)
+foodWithCluster
+```
+\
+Para ver nuestro cluster cargaremos el paquete factoextra, que dibujará un gráfico del dataset clusterizado.
+```{r eval=FALSE}
+install.packages("factoextra")
+```
+```{r}
+library(factoextra)
+```
+\newpage
+```{r}
+fviz_cluster(kmeans.res, data=foodNumeric)
+```
+
+¿Qué representan los dos ejes de la siguiente gráfica? ¿Y sus porcentajes entre paréntesis?
+
+* Dado que nuestro problema tiene 5 variables descriptoras no sería posible representar los individuos en una gráfica, pero por defecto la funcion `fviz_cluster` realizará el analisis de componentes principales (PCA) sobre nuestro problema para poder poder dibujar los individuos en un espacio 2D. Por tanto los ejes son los componentes principales resultado del analisis PCA, que serán combinación lineal de las antiguas variables descriptoras; y los porcentajes representan la cantidad de varianza que recoge cada componente.
+
+¿Qué muestra la gráfica? Explica
+
+* En la gráfica se nos muestran los individuos en función del valor que tienen en las nuevas componentes principales y se recogen en dos grupos por colores, cada grupo es un cluster. Además de representar cada individuo con un poligono pequeño tambien se representa el centroide del cluster mediante uno más grande.\
+El centroide es la media aritmetica de los valores para los componentes principales de todos los individuos del cluster, a la hora de evaluar se usa la distancia hasta este para decidir si un individuo está en el cluster correcto o está más cerca de otro y se debería cambiar.

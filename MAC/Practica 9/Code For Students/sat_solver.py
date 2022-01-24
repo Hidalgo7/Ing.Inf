@@ -3,56 +3,28 @@ from time import time
 from copy import deepcopy
 from tools import list_minisat2list_our_sat
 from pre_processing import sat_preprocessing
-      
-def check_SAT(num_variables,clauses,assignment):
-    for clause in clauses:
-        sat = False
-        i = 0
-        while not sat and i < len(clause):
-            if clause[i] is not None:
-                if clause[i] > 0:
-                    if assignment[clause[i]] == 1:
-                        sat = True
-                else:
-                    if assignment[-clause[i]] == 0:
-                        sat = True
-            i +=1
-        if not sat:
-            return "UNSATISFIABLE"
-    return True
 
 def solve_SAT_aux(num_variables,clauses,assignment):
-    print(assignment)
+    clauses,assignment = sat_preprocessing(num_variables,clauses,assignment)
     if clauses == [[1],[-1]]:
         return "UNSATISFIABLE"
-    elif check_SAT(num_variables,clauses,assignment) == True:
+    elif not clauses:
         return assignment
     else:
-        found = False
-        i = 0
-        while i < len(clauses) and not found:
-            clause = clauses[i]
-            for literal in clause:
-                if assignment[abs(literal)] is None:
-                    valor_literal = abs(literal)
-                    found = True
-            
-            i += 1
-        if found:
-            copy = list(assignment)
-            copy[valor_literal] = 0
-            sol = solve_SAT_aux(num_variables,clauses,copy)
-            if sol == "UNSATISFIABLE":
-                copy[valor_literal] = 1
-                sol = solve_SAT_aux(num_variables,clauses,copy)
-            return sol
+        lit = abs(clauses[0][0])
+        clauses_copy = deepcopy(clauses)
+        assignment_copy = deepcopy(assignment)
+        assignment_copy[lit] = 0
+        result = solve_SAT_aux(num_variables,clauses_copy,assignment_copy)
+        if result != "UNSATISFIABLE":
+            return result
         else:
-            return "UNSATISFIABLE"
+            assignment[lit] = 1
+            return solve_SAT_aux(num_variables,clauses,assignment)
     
 def solve_SAT(num_variables, clauses):
    #TODO
    assignment = [None] * (num_variables+1)
-   clauses,assignment = sat_preprocessing(num_variables,clauses,assignment)
    return solve_SAT_aux(num_variables,clauses,assignment)
    
     
@@ -92,7 +64,6 @@ def test():
                  [None, 1, None, None],
                  [1, 1, None, None]]
     assert solve_SAT(3,clauses) in solutions
-    print(solve_SAT(3,clauses))
     print("-"*40)
 
     clauses = [[2, 1, 3], [-2, -1, 3], [-2, 3, -1], [-2, -1, 3],

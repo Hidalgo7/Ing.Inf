@@ -14,14 +14,15 @@ def actualizar_formula(num_variables,clauses,assignment):
                 while i in clause:
                     clause.remove(i)
     
-    for clause in clauses:
+    for clause in f:
         redundant = False
         for literal in clause:
             if -literal in clause:
                 redundant = True
 
         if redundant:
-            clauses.remove(clause)
+            f.remove(clause)
+            
     return f
 
 
@@ -72,7 +73,7 @@ def una_aparicion(num_variables,clauses,assignment):
                 assignment[x] = 1
             else:
                 assignment[x] = 0
-        nueva_formula = actualizar_formula(num_variables,clauses, assignment)
+        nueva_formula = actualizar_formula(num_variables,clauses,assignment)
         return True, nueva_formula
     else:
         return False, clauses
@@ -80,11 +81,12 @@ def una_aparicion(num_variables,clauses,assignment):
             
 
 def sat_preprocessing(num_variables, clauses, assignment):
+    clauses = actualizar_formula(num_variables,clauses,assignment)
     update = True
     while update:
         update = False   
         # TODO
-        # usa funciones auxiliares         
+        # Usa funciones auxiliares         
         update1,clauses = variable_unica(num_variables,clauses,assignment)
         update2,clauses = una_aparicion(num_variables,clauses,assignment)
         update3,clauses = mismo_signo(num_variables,clauses,assignment)
@@ -92,18 +94,14 @@ def sat_preprocessing(num_variables, clauses, assignment):
         update = update1 or update2 or update3
         if [] in clauses:
             return [[1],[-1]],assignment
-        else:
-            if (clauses == []):
-                return clauses,assignment
+        elif clauses == []:
+            return clauses,assignment
     return clauses,assignment
         
 
     
 
 def test():
-    mismo_signo(4, [[4], [-3, -1], [3, -4, 2, 1], [1, -3, 4],
-                                         [-1, -3, -4, 2], [4, 3, 1, 2], [4, 3],
-                                         [1, 3, -4], [3, -4, 1], [-1]], [None, None, None, None, None])
     assert ([], [None, 1]) == sat_preprocessing(1, [[1]], [None, None])
     
     

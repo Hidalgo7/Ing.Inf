@@ -1,0 +1,77 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+# PCA en R
+
+Trabajaremos con el dataset iris, el mismo que hemos utilizado para hacer el PCA en Weka. Estos son los datos generales del dataset.\
+```{r}
+summary(iris)
+```
+\
+En R, la función que ejecuta el análisis de componentes principales (PCA) de nuestro problema es prcomp. Puede tomar varios parámetros pero los únicos que nos interesan en este caso son por un lado, los propios datos del dataset (en este caso cogemos las cuatro primeras columnas, puesto que la ultima es la clase) y el scale, que indica que queremos normalizar los datos antes de ejecutar el PCA.\
+
+```{r}
+pca_iris <- prcomp(iris[1:4],scale=TRUE)
+summary(pca_iris)
+```
+\
+¿Qué porcentaje de la varianza recoge la primera componente? ¿Y la segunda?
+
+* La primera componente (PCA1) recoge el 72.96% de la varianza, y la segunda (PCA2) recoge un 22.85%.\
+
+Si entre las dos se recoge el menos un 90-95% de la varianza, la visualización en 2-D de todos los puntos sobre ambas componentes, está "permitida".\
+```{r}
+biplot(pca_iris,scale=0,col=c("blue","red"))
+```
+\
+¿Qué representan los números en la visualización?
+
+* Cada número es una instancia del dataset, que están numeradas del 1 al 150.\
+
+¿Qué representan los dos ejes de la visualización?
+
+* Los ejes son los valores que toma cada variable para la PCA1 y la PCA2.\
+
+¿Qué representan las direcciones rojas en la visualización?
+
+* Las direcciones de las flechas representan los ejes originales de las variables del dataset. De dichas flechas y direcciones se puede deducir cual es el signo y la proporción de las variables originales que toman los nuevos componentes principales.\
+
+\newpage
+
+# Gráficos más visuales
+
+Varias visualizaciones "elegantes". Necesario utilizar dos paquetes: instalación y carga
+```{r eval=FALSE,results='hide'}
+install.packages("ggfortify")
+```
+
+```{r results='hide'}
+library(ggfortify)
+```
+
+```{r eval=FALSE}
+install.packages("ggplot2")
+```
+
+```{r results='hide'}
+library(ggplot2)
+```
+Indica las diferencias entre las siguientes 3 visualizaciones: qué reflejan, y en qué se diferencian\
+```{r}
+autoplot(pca_iris)
+```
+\
+En este primer gráfico se nos muestrán las instancias del dataset en un gráfico que representa cual es el valor que toman para las nuevas componentes principales. Ademas también muestra cual es la varianza que recoge cada componente.\newpage
+```{r}
+autoplot(pca_iris, data = iris, colour = 'Species')
+```
+En este segunda visualización se refleja además del valor de las instancias para las componentes principales, que ya se nos mostraba en en anterior, la clase a la pertenecen en el dataset iris, en función de su color.\newpage
+
+
+```{r}
+autoplot(pca_iris, data = iris, colour = 'Species', shape = FALSE, label.size = 3)
+```
+Por último este dataset refleja lo mismo que el anterior con la diferencia de que en lugar de representar cada individuo con un punto en el gráfico se le representa con el número que le correspone en el dataset.
