@@ -1,0 +1,11 @@
+<!ELEMENT profile (info,libros)>
+<!ELEMENT info (usuario,email)*>
+<!ELEMENT usuario (#PCDATA)>
+<!ELEMENT email (#PCDATA)>
+<!ELEMENT libros (libro)*>
+<!ELEMENT libro (foto, titulo, autor, descripcion, precio)>
+<!ELEMENT foto (#PCDATA)>
+<!ELEMENT titulo (#PCDATA)>
+<!ELEMENT autor (#PCDATA)>
+<!ELEMENT descripcion (#PCDATA)>
+<!ELEMENT precio (#PCDATA)>

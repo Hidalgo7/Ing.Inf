@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<usuario id="20">
+  <usuario>anderlarri14</usuario>
+  <nombre>Ander</nombre>
+  <apellido>Larrinaga</apellido>
+  <fechaNacimiento>2021-12-02</fechaNacimiento>
+  <email>anderlarri14@gmail.com</email>
+  <contrasena>$2y$10$xqd9g1mCXRtPtSqolS86EeXKpLF0KlbWr2bUP78DSofiZKmlEUkuO</contrasena>
+</usuario>

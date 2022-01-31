@@ -1,0 +1,273 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+a{
+    text-decoration: none;
+}
+
+nav{
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: 250px 1fr auto;
+    justify-items: stretch;
+    background-color: #1c1c1c;
+    color:white;
+}
+.link-perfil{
+    display: none;
+}
+#carrito{
+    position: relative;
+    height: 40px;
+    width: 40px;
+    background-image:url("../../public/carrito.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 80% 80%;
+    background-color: #7f9f94;
+    border-radius:10px;
+
+}
+#carrito>#numLibros{
+    position:absolute;
+    bottom:-15%;
+    right:-15%;
+    width:20px;
+    height: 20px;
+    background-color:crimson;
+    color:white;
+    border-radius:50%;
+    display: grid;
+    align-items: center;
+    justify-items:center;
+    z-index:10;
+}
+#carrito:hover #listado {
+    display:grid;
+    animation-name: aparecerCarrito;
+    animation-duration: 0.5s;
+}
+
+@keyframes aparecerCarrito {
+    0%   {opacity:0;}
+    100% {opacity:1;}
+}
+#carrito>#listado{
+    position:absolute;
+    top:100%;
+    right:0;
+    background-color:white;
+    width:500px;
+    border:3px solid #7f9f94;
+    z-index:2;
+    display:none;
+    grid-auto-flow:row;
+    grid-template-rows: 1fr 50px auto;
+    box-shadow:1px 1px 5px black;
+    padding:10px 20px;
+    padding-top:30px;
+    grid-gap:10px;
+    overflow-Y:hidden;
+}
+.tituloLibro{
+    grid-area: titulo;
+    overflow:hidden;
+
+}
+.autorLibro{
+    grid-area:autor;
+}
+.quitarLibro{
+    grid-area:cerrar;
+    text-align:right;
+    color:rgb(237 20 61 / 33%);
+    cursor:pointer;
+}
+.quitarLibro:hover{
+    color:crimson;
+}
+.autorLibro,.precioLibro{
+    font-size:0.8em;
+    color:#9d9d9d;
+}
+.precioLibro{
+    grid-area:precio;
+    text-align:right;
+}
+#libros{
+    color:black;
+    display:grid;
+    grid-auto-flow:row;
+    grid-gap:20px;
+}
+
+.libro{
+    border-bottom:1px solid rgb(237 20 61 / 33%);
+    display:grid;
+    grid-template-columns: 1fr 30px;
+    grid-template-areas:
+    "titulo cerrar"
+    "autor  precio";
+
+}
+
+#precioTotal{
+    color:black;
+
+    padding-top:5px;
+}
+#contBotComprar{
+    display:grid;
+    justify-content:right;
+}
+#botComprar{
+    color:#7f9f94;
+    border:1px solid #7f9f94;
+    padding:10px;
+    border-radius:10px;
+    cursor:pointer;
+    box-shadow:2px 2px 2px black;
+}
+#botComprar:hover{
+    transform:translate(1px, 1px);
+    box-shadow:1px 1px 1px black;
+}
+
+
+nav>a{
+    position: relative;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: auto 1fr;
+    justify-items: stretch;
+    color:white;
+}
+nav>a>p{
+    display: grid;
+    justify-items: center;
+    align-items: center;
+    font-family: 'Kings',cursive;
+    font-size:2em;
+}
+#header-logo{
+    height: 95px;
+    position: relative;
+}
+#links{
+    color:white;
+    display: grid;
+    grid-auto-flow: column;
+    justify-content: start;
+    align-items: center;
+    grid-gap:1.5em;
+    padding-left: 5em;
+}
+#links>a{
+    color:white;
+}
+#links>a:hover{
+    color:#e7e4be;
+}
+#inicio-sesion{
+    display: none;
+    grid-auto-flow: column;
+    align-items: center;
+    justify-items: center;
+    grid-gap:1.5em;
+    padding: 0 3em;
+    font-size: 1.2em;
+}
+#inicio-sesion>div{
+    cursor: pointer;
+}
+
+#inicio-sesion>div:hover{
+    color:#7f9f94;
+}
+#navUsuario{
+    color:white;
+    display:none;
+    grid-auto-flow:column;
+    align-items:center;
+    grid-gap:10px;
+    font-size: 1.1em;
+    padding-right: 1.5em;
+}
+#navUsuario>img{
+    height:70px;
+    border-radius:50%;
+}
+#navUsuario>#botCerrarSesion{
+    color:crimson;
+    font-size:0.8em;
+    cursor:pointer;
+}
+
+
+#pop{
+    position:absolute;
+    background-color:rgba(0,0,0,0.7);
+    width:100%;
+    height:100%;
+    z-index:1;
+    display:none;
+    align-items:center;
+    justify-items:center;
+}
+#popMain{
+    position:relative;
+    background-color:white;
+    border:5px solid #7f9f94;
+    border-radius:5px;
+}
+
+#popMain>form{
+    padding:3em 10em;
+    grid-gap:1em;
+    display: none;
+}
+
+.popTitulo{
+    font-weight:bold;
+    font-size:2.5em !important;
+    text-align:center;
+    text-shadow:1px 1px 1px black;
+
+}
+#popMain>form>div{
+    color:#7f9f94;
+    font-size:1.5em;
+}
+#popMain>form>label>input{
+    padding: 1em 2em;
+}
+#popMain>form>label{
+    color:black;
+    display:grid;
+    grid-auto-flow:column;
+    grid-template-columns:1fr 1fr;
+}
+#popMain>formo>label>p{
+    display:grid;
+    align-items:center;
+}
+#popMain>form>button{
+    color:#7f9f94;
+    border:2px solid #7f9f94;
+    background-color:white;
+    padding:0.5em;
+    border-radius:1px;
+    cursor:pointer;
+    font-size:1.1em;
+}
+#popMain>form>button:hover{
+    color:white;
+    background-color:#7f9f94;
+}
+
+h2,footer a, footer p,i,li{
+    color: white;
+    margin-bottom: 10px;
+}
+

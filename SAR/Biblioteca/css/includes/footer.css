@@ -1,0 +1,60 @@
+footer{
+    background-color: black;
+    padding: 0px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+footer p{
+    text-align: justify;
+}
+
+footer div{
+    width: 27%;
+}
+
+footer h2{
+    text-align: center;
+}
+
+footer .logo-wrap{
+    width: 15%;
+    height: 80%;
+    text-align: center;
+    border-right: 1px solid #FFF;
+}
+
+#footer-logo{
+    display: inline;
+    width: 100px;
+    height: 100px;
+    margin-top: 10px;
+}
+
+.contact ul{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.contact ul li{
+    width: 50%;
+    margin-bottom: 15px;
+}
+
+.social-media{
+    width: 20%;
+}
+.social-media i{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid #D8E2DC;
+    text-align: center;
+    line-height: 25px;
+    margin-left: 10px;
+}
+.social-media ul{
+    list-style-type: none;
+    display: flex;
+}

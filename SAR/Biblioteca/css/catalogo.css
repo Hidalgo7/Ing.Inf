@@ -1,0 +1,131 @@
+body{
+    display:grid;
+    position:absolute;
+    height:100%;
+    width:100%;
+    grid-template-rows: 100px 1fr auto;
+}
+
+.content{
+    display:grid;
+    grid-auto-flow:row;
+    grid-template-rows: auto 1fr;
+
+
+}
+.filtros{
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-columns: 25% 25% 25% 25%;
+    grid-template-areas: "title title title title"
+                         "filt1 filt2 filt3 filt4";
+    background-color: #82a197;
+    padding:0;
+}
+.filtros>div{
+    display:grid;
+
+    justify-items:center;
+    align-items:center;
+
+}
+.filtros>h1{
+    grid-area: title;
+    color:#e7e4be;
+    text-shadow:1px 1px 5px black;
+    text-align: center;
+}
+
+.filtros input[type=text]{
+    background-color: rgb(238, 238, 238);
+}
+
+.filtros>*:not(:first-child){
+    text-align: center;
+}
+.filtroPrecio{
+    display:grid;
+    grid-auto-flow:row;
+    grid-gap:10px;
+}
+.filtroPrecio>div{
+    display:grid;
+    grid-auto-flow:column;
+}
+.filtroPrecio>div>label{
+    display:grid;
+    grid-auto-flow:column;
+}
+
+
+
+.listaLibros{
+    background-image: url("../public/background.webp");
+    background-repeat: repeat;
+    display:grid;
+    grid-gap:40px;
+    padding:50px;
+    justify-items:center;
+
+}
+.listaLibros>.libro{
+    display: grid;
+    grid-template-columns: 30% 70%;
+    padding:20px;
+    width:1000px;
+    background-color: rgb(255 255 255 / 80%);
+    border-radius: 5px;
+    padding:30px;
+    box-shadow:2px 2px 5px black;
+}
+.book-cover{
+    justify-self: center;
+    height: 300px;
+    width: 188.2px;
+    box-shadow:1px 1px 1px black;
+}
+
+.informacion{
+    display: grid;
+    grid-template-rows: 25% 50% 25%;
+}
+
+.contTitulo{
+    height: 100%;
+    width: 100%;
+    color:#66b79d;
+}
+.title{
+    text-shadow:1px 1px 1px black;
+    font-size: x-large;
+}
+.descripcion{
+    height: 100%;
+    width: 100%;
+}
+.contCompra{
+    height: 100%;
+    width: 100%;
+    display: grid;
+
+}
+.notResult{
+    display: grid;
+    margin-top: 100px;
+    text-align: center;
+    width: 500px;
+    height: 80px;
+    background-color: rgb(253 107 107 / 54%);
+    border-radius: 50px;
+}
+.notResult>h1{
+    align-self: center;
+    color: black;
+}
+.contCompra input[type=button]{
+    background-color: rgb(238, 238, 238);
+    cursor:pointer;
+
+}
+
+

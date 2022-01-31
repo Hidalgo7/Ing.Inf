@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE profile SYSTEM "Profile.dtd">
+<profile>
+    <info>
+        <usuario>Hidalgo</usuario>
+        <email>ikerhidalgo7@gmail.com</email>
+    </info>
+    <libros>
+        
+        <libro>
+            <foto>libro1.webp</foto>
+            <titulo>Harry Potter y la piedra filosofal</titulo>
+            <autor>J.K. Rowling</autor>
+            <descripcion>
+                Harry Potter se ha quedado huérfano y vive en casa de sus abominables tíos y el insoportable primo Dudley. Harry se siente muy triste y solo, hasta que un buen día recibe una carta que cambiará su vida para siempre. En ella le comunican que ha sido aceptado como alumno en el Colegio Hogwarts de Magia.
+            </descripcion>
+            <precio>15,99</precio>
+        </libro>
+        
+        <libro>
+            <foto>libro2.webp</foto>
+            <titulo>Las Crónicas de Narnia: El príncipe Caspian</titulo>
+            <autor>C.S. Lewis</autor>
+            <descripcion>
+                El príncipe lucha por su corona, al tiempo que descubre la verdadera historia de su pueblo, los telmarinos, unos auténticos piratas terrestres…Los Pevensie acuden a Narnia de nuevo para ayudar al príncipe a recuperar el trono. Un combate de honor entre dos hombres solos decidirá el destino de todo un mundo. Narnia, la tierra donde todo puede suceder.
+            </descripcion>
+            <precio>4,99</precio>
+        </libro>
+    </libros>
+</profile>

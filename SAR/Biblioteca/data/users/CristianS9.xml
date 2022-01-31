@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<usuario id="19">
+  <usuario>CristianS9</usuario>
+  <nombre>Cristian</nombre>
+  <apellido>Siroca</apellido>
+  <fechaNacimiento>2021-12-01</fechaNacimiento>
+  <email>cristisiroca@hotmail.es</email>
+  <contrasena>$2y$10$7fLEnQZ44vYfO5KYk4sAu..3ogw7.xkX0SvkF5ffY4uXUOU6TurjS</contrasena>
+</usuario>

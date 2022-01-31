@@ -1,0 +1,1 @@
+En esta carpeta van todos los ajax de las páginas
