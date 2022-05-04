@@ -143,7 +143,6 @@ def breadthFirstSearch(problem):
     while not porExaminar.isEmpty():
         next = porExaminar.pop()
         path = caminos.pop()
-        print(path)
         if problem.isGoalState(next):
                 return path
         elif next not in checked:
@@ -153,10 +152,6 @@ def breadthFirstSearch(problem):
                     thisPath = path + [dir]
                     porExaminar.push(successor)
                     caminos.push(thisPath)
-                else:
-                    print("Checked : {}".format(successor))
-    
-    return []
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""

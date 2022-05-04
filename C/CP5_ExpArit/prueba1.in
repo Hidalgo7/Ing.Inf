@@ -1,0 +1,11 @@
+program prueba1 is
+
+
+begin
+
+  k := k + 6;
+  s2 := 0;
+  k := k - s2 / 2;
+  s1 := s2 * 3 + k / s2;
+ 
+endprogram ;

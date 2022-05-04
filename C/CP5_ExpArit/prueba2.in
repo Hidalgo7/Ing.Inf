@@ -1,0 +1,14 @@
+program prueba2 is
+
+
+
+begin
+ b := 4 + 2 - 1 / a * 3;  
+
+ a := b + 6 + 6 + 4;
+ 
+ a:=b;
+ 
+ x := y * 80 + z;
+
+endprogram ;

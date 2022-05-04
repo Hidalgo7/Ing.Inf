@@ -1,0 +1,17 @@
+//exit fuera de un bucle
+program prueba2 is
+
+var a,b : integer ;
+
+begin
+
+  while (a+3 < b-3) do
+    
+    exit if b < 0;
+    a := a + 1;
+     
+  endwhile ; 
+  
+  exit if b < 0;
+
+endprogram ;

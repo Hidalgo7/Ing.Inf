@@ -1,0 +1,27 @@
+program prueba3 is
+
+var a,b : integer ;
+
+begin
+  a := b + 6 * 6 - 4;
+  repeat  
+    a := a * 2;
+    b := b + 1;
+  until (a+3 < b-3) endrepeat ;
+
+  a:=b;
+
+  if (a>0) then 
+    a := a/7	;
+    if a < 0 then a:= a * 7;
+  else
+    b := 0;
+  endif;
+ endif ;
+  
+ while a>0 do
+    a:= 0;
+    b:= 0;
+ endwhile;
+
+endprogram ;

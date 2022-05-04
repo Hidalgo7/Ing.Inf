@@ -1,0 +1,10 @@
+program ejemplo
+
+// esto es un comentario de línea
+
+{
+
+   a := a * 0.4756 ;
+}
+  
+

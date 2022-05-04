@@ -1,0 +1,11 @@
+program prueba1 is
+var k1,k2,k3 : float ;
+var s4,s5 : integer ;
+
+begin
+
+  k1 := k2 + 6 * 6 - 4;
+  s4 := 0;
+ 
+  
+endprogram ;
